@@ -6,6 +6,8 @@ var canvasElement;
 var canvas;
 var trimCanvasElement;
 var trimCanvas;
+var sampCanvasElement;
+var sampCanvas;
 var binCanvasElement;
 var binCanvas;
 var grayCanvasElement;
@@ -21,6 +23,7 @@ var firstHeight = 0;
 var firstData = "";
 const RATIO_ENLARGE = 2.0;
 const RATIO_SHARE = 0.5;
+const SIZE_CODE = 250.0;
 
 function funcOnLoad() {
 	video = document.createElement("video");
@@ -28,6 +31,8 @@ function funcOnLoad() {
 	canvas = canvasElement.getContext("2d");
 	trimCanvasElement = document.getElementById("trimCanvas");
 	trimCanvas = trimCanvasElement.getContext("2d");
+	sampCanvasElement = document.getElementById("sampCanvas");
+	sampCanvas = sampCanvasElement.getContext("2d");
 	binCanvasElement = document.getElementById("binCanvas");
 	binCanvas = binCanvasElement.getContext("2d");
 	grayCanvasElement = document.getElementById("grayCanvas");
@@ -85,7 +90,7 @@ function tick() {
 				var point = calcPointCode(code);
 				var width = point.right - point.left;
 				var height = point.bottom - point.top;
-				if( ( ( width > (RATIO_ENLARGE * firstWidth ) ) && ( height > (RATIO_ENLARGE * firstHeight ) ) ) || ( ( width > ( RATIO_SHARE * video.videoWidth ) ) && ( height > (RATIO_SHARE * video.videoHeight ) ) ) ) {
+				if( ( ( width > SIZE_CODE ) && ( height > SIZE_CODE ) ) || ( ( width > ( RATIO_SHARE * video.videoWidth ) ) && ( height > (RATIO_SHARE * video.videoHeight ) ) ) ) {
 					enjoy(code, imageData);
 					return;
 				}
@@ -99,67 +104,41 @@ function tick() {
 	requestAnimationFrame(tick);
 }
 function enjoy(code, imageData) {
-	var point = calcPointCode(code);
-	var trimWidth = point.right - point.left;
-	var trimHeight = point.bottom - point.top;
-	var trimImage = canvas.getImageData(point.left, point.top, trimWidth, trimHeight);
+	//canvasからQRコード部分のみを抽出する。
+	//trimCanvas.putImageData(trimQR(canvas, code, trimCanvasElement), 0, 0);
 	trimCanvasElement.hidden = false;
-	trimCanvasElement.height = trimHeight;
-	trimCanvasElement.width = trimWidth;
-	trimCanvas.putImageData(trimImage,0 ,0);
-	/* 逆射影変換する */
+	trimCanvasElement.height = canvasElement.height;
+	trimCanvasElement.width = canvasElement.width;
+	var imgData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+	var binTrimedImageData = getTrimQRbinImage(imgData, code);
+	trimCanvas.putImageData(binTrimedImageData, 0, 0);
+	// 逆射影変換する(射影変換というよりただのサンプリング)
 	const NUM_SAMPLE = 1000;
+	//sampleCanvas(canvas, grayCanvasElement, NUM_SAMPLE);
+	//カメラ画像から画像を拡大する。
+	sampCanvasElement.hidden = false;
+	sampCanvasElement.height = NUM_SAMPLE;
+	sampCanvasElement.width = NUM_SAMPLE;
+	sampImageData = sampleImage(canvas, NUM_SAMPLE, code);
+	sampCanvas.putImageData(sampImageData, 0, 0);
+	//カラー画像の閾値を求める。
+	var rgbThreshold = getColorThresholed(sampImageData);
+	//2値化画像を求める。
+	var binImage = getBinImage(sampImageData, rgbThreshold);
 	grayCanvasElement.hidden = false;
 	grayCanvasElement.height = NUM_SAMPLE;
 	grayCanvasElement.width = NUM_SAMPLE;
-	var grayImage = new ImageData(NUM_SAMPLE, NUM_SAMPLE);
-	var sumGray = 0.0;
-	for(i = 0; i < NUM_SAMPLE; i++){
-		pStart = getPointN( code.location.topLeftCorner,  code.location.bottomLeftCorner, i, NUM_SAMPLE);
-		pEnd = getPointN( code.location.topRightCorner,  code.location.bottomRightCorner, i, NUM_SAMPLE);
-		for(j = 0; j < NUM_SAMPLE; j++){
-			var point = getPointN(pStart, pEnd, j, NUM_SAMPLE);
-			var pixel = canvas.getImageData(point.x, point.y, 1, 1);
-			var data = pixel.data;
-			var index = (j + i * NUM_SAMPLE) * 4;
-			var gray = (data[0] + data[1] + data[2]) / 3.0; 
-			grayImage.data[index + 0] = gray;
-			grayImage.data[index + 1] = gray;
-			grayImage.data[index + 2] = gray;
-			grayImage.data[index + 3] = 255;
-			sumGray += gray;
-		}
-	}
-	grayThreshold = sumGray / ( NUM_SAMPLE * NUM_SAMPLE );
-	grayCanvas.putImageData(grayImage, 0, 0);
+	var grayImageData = sampleGrayImage(canvas, NUM_SAMPLE, code);
+	grayCanvas.putImageData(grayImageData, 0, 0);
 
 	binCanvasElement.hidden = false;
 	binCanvasElement.height = NUM_SAMPLE;
 	binCanvasElement.width = NUM_SAMPLE;
-	var binImage = new ImageData(NUM_SAMPLE, NUM_SAMPLE);
-	for(i = 0; i < NUM_SAMPLE; i++){
-		for(j = 0; j < NUM_SAMPLE; j++) {
-			var index = (j + i * NUM_SAMPLE) * 4;
-			var data = grayImage.data[index + 0];
-			if( grayThreshold < data ) {
-				binImage.data[index + 0] = 255;
-				binImage.data[index + 1] = 255;
-				binImage.data[index + 2] = 255;
-			} else {
-				binImage.data[index + 0] = 0;
-				binImage.data[index + 1] = 0;
-				binImage.data[index + 2] = 0;
-			}
-			binImage.data[index + 3] = 255;
-		}
-	}
-	binCanvas.putImageData(binImage, 0, 0);
 	var sumLength = getLengthFinderPattern(binImage, 1);
 	sumLength += getLengthFinderPattern(binImage, 2);
 	sumLength += getLengthFinderPattern(binImage, 3);
 	const SIZE_MODULE = sumLength / 12.0;
 	const NUM_MODULE = NUM_SAMPLE / SIZE_MODULE;
-	/**/
 	// var lgArr = new Array( NUM_SAMPLE * NUM_SAMPLE );
 	qrCanvasElement.hidden = false;
 	qrCanvasElement.height = NUM_SAMPLE;
@@ -178,27 +157,187 @@ function enjoy(code, imageData) {
 			qrCanvas.fillStyle = "rgba(" + clrPick + "," + clrPick + "," + clrPick + ",1)";
 			qrCanvas.fillRect(xRect0, yRect0, SIZE_MODULE, SIZE_MODULE);
 			//lgArr[ i + NUM_SAMPLE * j ] = clrPick / 255;
-			console.log("idx:%d, c:%d clr:%d, fS:%s", index, binImage.data[index], clrPick, qrCanvas.fillStyle);
 		}
 	}
 	binCanvas.putImageData(binImage, 0, 0);
 }
+function trimQR(src, code, trimedCE){ /*jsqrの出力に従って、カメラの画像からQRコード部分を抜き出す。*/
+	var point = calcPointCode(code);
+	var trimWidth = point.right - point.left;
+	var trimHeight = point.bottom - point.top;
+	var trimImage = src.getImageData(point.left, point.top, trimWidth, trimHeight);
+	trimedCE.hidden = false;
+	trimedCE.height = trimHeight;
+	trimedCE.width = trimWidth;
+	return trimImage;
+}
+function getTrimQRbinImage(srcImageData, code){/*
+	jsqrの出力に従って、カメラの画像からQRコード部分を抜き出し、2値化したImageDataを返す。*/
+	var trimImageData = new ImageData(srcImageData.width, srcImageData.height);
+	var point = calcPointCode(code);
+	//pointの座標は浮動小数点数なので整数に変換する。
+	var right = Math.ceil(point.right); //大きめの値を取るのでceilを使用。
+	var left = Math.floor(point.left); //小さめの値を取るのでfloorを使用。
+	var top = Math.floor(point.top);
+	var bottom = Math.ceil(point.bottom);
+	var w = srcImageData.width;
+	var hist = new Array(256);
+	hist.fill(0);
+	for(y = top; y <= bottom; y++){
+		for(x = left; x <= right; x++){
+			var idx = pos2idx(x, y, 0, w);
+			var red = srcImageData.data[idx + 0];
+			var green = srcImageData.data[idx + 1];
+			var blue = srcImageData.data[idx + 2];
+			var gray = Math.round((red * 299 + green * 587 + blue * 114) / 1000);
+			trimImageData.data[idx + 0] = red;
+			trimImageData.data[idx + 1] = green;
+			trimImageData.data[idx + 2] = blue;
+			trimImageData.data[idx + 3] = 255;
+			hist[Math.round(gray)]++;
+			//console.log("x:%d, y:%d, idx:%d, r:%d g:%d b:%d c:%d", x, y, idx, red, blue, green, gray);
+		}
+	}
+	//判別分析法を用いてしきい値を求める。
+	var tMaxVarBC = getMaxVarianceBetweenClass(hist);
+	for(y = top; y <= bottom; y++){
+		for(x = left; x <= right; x++){
+			var idx = pos2idx(x, y, 0, w);
+			var gray = srcImageData.data[idx + 0];
+			if(gray > tMaxVarBC){
+				trimImageData.data[idx + 0] = 255;
+				trimImageData.data[idx + 1] = 255;
+				trimImageData.data[idx + 2] = 255;
+			} else {
+				trimImageData.data[idx + 0] = 0;
+				trimImageData.data[idx + 1] = 0;
+				trimImageData.data[idx + 2] = 0;
+			}
+		}
+	}
+	return trimImageData;
+}
+function sampleImage(src, numSample, code){/* 
+	jsqrの出力に従ってカメラの画像からQRコード部分をサンプリングする。
+	src: カメラ画像のcanvasオブジェクト
+	numSample: サンプリング数=サンプリング後の画像サイズ
+	code:jsqrの読込結果
+	*/
+	var image = new ImageData(numSample, numSample);
+	for(y = 0; y < numSample; y++){
+		pStart = getPointN( code.location.topLeftCorner,  code.location.bottomLeftCorner, y, numSample);
+		pEnd = getPointN( code.location.topRightCorner,  code.location.bottomRightCorner, y, numSample);
+		h = (pEnd.y - pStart.y) / numSample;
+		w = (pEnd.x - pStart.x) / numSample;
+		if(h >= 0){
+			h = max(1, h);
+		} else {
+			h = min(-1, h);
+		}
+		if(w >= 0){
+			w = max(1, w);
+		} else {
+			w = min(-1, w);
+		}
+		for(x = 0; x < numSample; x++){
+			var point = getPointN(pStart, pEnd, x, numSample);
+			var pixel = src.getImageData(point.x, point.y, w, h);
+			var idx = pos2idx(x, y, 0, numSample);
+			image.data[idx + 0] = pixel.data[0];
+			image.data[idx + 1] = pixel.data[1];
+			image.data[idx + 2] = pixel.data[2];
+			image.data[idx + 3] = 255;
+		}
+	}
+	return image;
+}
+function sampleGrayImage(src, numSample, code){/*
+	jsqrの出力に従ってカメラの画像からQRコード部分をサンプリングしてグレースケール画像とする。
+	src: カメラ画像のcanvasオブジェクト
+	numSample: サンプリング数=サンプリング後の画像サイズ
+	code:jsqrの読込結果
+	*/
+	var grayImage = new ImageData(numSample, numSample);
+	for(y = 0; y < numSample; y++){
+		pStart = getPointN( code.location.topLeftCorner,  code.location.bottomLeftCorner, y, numSample);
+		pEnd = getPointN( code.location.topRightCorner,  code.location.bottomRightCorner, y, numSample);
+		h = (pEnd.y - pStart.y) / numSample;
+		w = (pEnd.x - pStart.x) / numSample;
+		if(h >= 0){
+			h = max(1, h);
+		} else {
+			h = min(-1, h);
+		}
+		if(w >= 0){
+			w = max(1, w);
+		} else {
+			w = min(-1, w);
+		}
+		for(x = 0; x < numSample; x++){
+			var point = getPointN(pStart, pEnd, x, numSample);
+			var pixel = canvas.getImageData(point.x, point.y, 1, 1);
+			var data = pixel.data;
+			var idx = pos2idx(x, y, 0, numSample);
+			var gray = Math.round((data[0] * 299 + data[1] * 587 + data[2] * 114) / 1000);
+			grayImage.data[idx + 0] = gray;
+			grayImage.data[idx + 1] = gray;
+			grayImage.data[idx + 2] = gray;
+			grayImage.data[idx + 3] = 255;
+		}
+	}
+	return grayImage;
+}
+function getBinImage(imgData, clrThreshold){/*
+	imgDataの画像をclrThresholdに従って2値化する。
+*/
+	var w = imgData.width;
+	var h = imgData.height;
+	var binImg = new ImageData(imgData.width, imgData.height);
+	for( y = 0; y < h; y++){
+		for( x = 0; x < w; x++){
+			var idx = pos2idx(x, y, 0, w);
+			var num = 0;
+			if(imgData.data[idx + 0] > clrThreshold.r){
+				num++;
+			}
+			if(imgData.data[idx + 1] > clrThreshold.g){
+				num++;
+			}
+			if(imgData.data[idx + 2] > clrThreshold.b){
+				num++;
+			}
+			if(num >= 2){
+				binImg.data[idx + 0] = 255;
+				binImg.data[idx + 1] = 255;
+				binImg.data[idx + 2] = 255;
+			} else {
+				binImg.data[idx + 0] = 0;
+				binImg.data[idx + 1] = 0;
+				binImg.data[idx + 2] = 0;
+			}
+			binImg.data[idx + 3] = 255;
+		}
+	}
+	return binImg;
+}
 
 function getLengthFinderPattern(binImage, posPattern) {
-	// posPattern 1:左上, 2:右上, 3:左下
+	// ファインダーパターンの長さを求める。
+	// binImage 2値化したQRコードの画像
+	// posPattern 開始位置。1:左上, 2:右上, 3:左下
 	var mode = 0;
 	var sumLength = 0;
 	var width = binImage.width;
 	for(i = 0; i < width; i++) {
 		var index = 0;
-		if (posPattern == 1) {
-			index = (i + i * width ) * 4;
+		if (posPattern == 1) {/*左上から右下に移動*/
+			index = (i + i * width ) * 4; /*(i,i)*/
 		} 
-		else if (posPattern == 2) {
-			index = ( (width - i) + i * width) * 4;
+		else if (posPattern == 2) {/*右上から左下に移動*/
+			index = ( (width - i) + i * width) * 4;/*(width-i,i)*/
 		}
-		else {
-			index = (i + (width - i) * width) * 4;
+		else {/*左下から右上に移動*/
+			index = (i + (width - i) * width) * 4;/*(i,width-i)*/
 		}
 		var data = binImage.data[index + 0];
 		if( (mode == 0) && (data == 0) ) {
@@ -232,35 +371,4 @@ function getLengthFinderPattern(binImage, posPattern) {
 	}
 	//console.log(sumLength);
 	return sumLength;
-}
-function calcPointCode(code) {
-	var l = min(code.location.bottomLeftCorner.x, code.location.topLeftCorner.x);
-	var r = max(code.location.bottomRightCorner.x, code.location.topRightCorner.x);
-	var t = min(code.location.topLeftCorner.y, code.location.topRightCorner.y);
-	var b = max(code.location.bottomRightCorner.y, code.location.bottomLeftCorner.y);
-	var point = {left:l, right:r, top:t, bottom:b};
-	return point; 
-}
-function min(var1, var2) {
-	if(var1 < var2) {
-		return var1;
-	} else {
-		return var2;
-	}
-}
-function max(var1, var2) {
-	if(var1 > var2) {
-		return var1;
-	} else {
-		return var2;
-	}
-}
-//始点から終点までをn分割したi番目の点を返す
-function getPointN(p0, p1, i, n) {
-	var dx = p1.x - p0.x;
-	var dy = p1.y - p0.y;
-	var x = p0.x + dx * ( i / ( n - 1 ) );
-	var y = p0.y + dy * ( i / ( n - 1 ) );
-	var p = {x:x, y:y};
-	return p;
 }

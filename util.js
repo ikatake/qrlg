@@ -1,0 +1,39 @@
+// util.js
+
+function pos2idx(x, y, numRGBA, width){/*
+x, yの座標からImageDataのdata配列インデックスを返す。
+*/
+	return ( ( y * width + x ) * 4 + numRGBA );
+}
+function calcPointCode(code) {
+	var l = min(code.location.bottomLeftCorner.x, code.location.topLeftCorner.x);
+	var r = max(code.location.bottomRightCorner.x, code.location.topRightCorner.x);
+	var t = min(code.location.topLeftCorner.y, code.location.topRightCorner.y);
+	var b = max(code.location.bottomRightCorner.y, code.location.bottomLeftCorner.y);
+	var point = {left:l, right:r, top:t, bottom:b};
+	return point; 
+}
+function min(var1, var2) {
+	if(var1 < var2) {
+		return var1;
+	} else {
+		return var2;
+	}
+}
+function max(var1, var2) {
+	if(var1 > var2) {
+		return var1;
+	} else {
+		return var2;
+	}
+}
+//始点から終点までをn分割したi番目の点を返す
+function getPointN(p0, p1, i, n) {
+	var dx = p1.x - p0.x;
+	var dy = p1.y - p0.y;
+	var x = Math.round( p0.x + dx * ( i / ( n - 1 ) ) );
+	var y = Math.round( p0.y + dy * ( i / ( n - 1 ) ) );
+	var p = {x:x, y:y};
+	return p;
+}
+
