@@ -1,23 +1,23 @@
 //imgBin.js
 //画像の2値化関係の関数をまとめる。
-function getColorThresholed(imgData){
+function getColorThreshold(imgData){
 	/*
 	2値化するためのしきい値を求める。
 	imgData: canvasのコンテキストオブジェクト
 	戻り値:color(r, g, b)
 	*/
-	var r = getOneThresholed(imgData, 0);
-	var g = getOneThresholed(imgData, 1);
-	var b = getOneThresholed(imgData, 2);
+	var r = getOneThreshold(imgData, 0);
+	var g = getOneThreshold(imgData, 1);
+	var b = getOneThreshold(imgData, 2);
 	var color = {r:r, g:g, b:b};
 	return color;
 }
-function getOneThresholed(imgData, numClr){
+function getOneThreshold(imgData, numClr){
 	/*
 	2値化するためのしきい値を求める。
 	imgData: ImageDataオブジェクト
 	numClr: 0:Red 1:Green 2:Blue 3:Alpha
-	戻り値:thresholed
+	戻り値:threshold
 	*/
 	var hist = new Array(256);
 	hist.fill(0); //0で初期化する。
