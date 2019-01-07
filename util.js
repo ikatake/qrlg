@@ -36,4 +36,29 @@ function getPointN(p0, p1, i, n) {
 	var p = {x:x, y:y};
 	return p;
 }
+function copyElements(src, dst, idxSrc, idxDst, len){/*
+src:コピー元の配列　dst:コピー先の配列
+idxSrc:コピー元の配列の基準インデックス
+idxDst:コピー先の配列の基準インデックス
+len:長さ
+*/
+	for( i = 0; i < len; i++){
+		if(dst[i + idxDst] == undefined || src[i + idxSrc] == undefined){
+			continue;
+		}
+		dst[i + idxDst] = src[i + idxSrc];
+	}
+	return i;
+}
+function writeElements(val, dst, idxDst, len){/*
+val:書込む値　dst:書込み先の配列
+idxDst:書込み先の配列の基準インデックス
+len:長さ
+*/
+	for( i = 0; i < len; i++){
+		if(dst[i + idxDst] == undefined){
+		dst[i + idxDst] = val;
+	}
+	return i;
+}
 

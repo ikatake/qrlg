@@ -122,14 +122,19 @@ function enjoy(code, imageData) {
 	sampImageData = sampleImage(canvas, NUM_SAMPLE, code);
 	sampCanvas.putImageData(sampImageData, 0, 0);
 	//カラー画像の閾値を求める。
-	var rgbThreshold = getColorThresholed(sampImageData);
+	var rgbThreshold = getColorThreshold(sampImageData);
 	//2値化画像を求める。
-	var binImage = getBinImage(sampImageData, rgbThreshold);
+	//var binImage = getBinImage(sampImageData, rgbThreshold);
 	grayCanvasElement.hidden = false;
 	grayCanvasElement.height = NUM_SAMPLE;
 	grayCanvasElement.width = NUM_SAMPLE;
 	var grayImageData = sampleGrayImage(canvas, NUM_SAMPLE, code);
 	grayCanvas.putImageData(grayImageData, 0, 0);
+	var sharpedGrayImageData = sharpenImageGray(grayImageData);
+	var grayThreshold = getOneThreshold(grayImageData, 0);
+	var th = {r:grayThreshold, g:grayThreshold, b:grayThreshold};
+	//2値化画像を求める。
+	binImage = getBinImage(grayImageData, th);
 
 	binCanvasElement.hidden = false;
 	binCanvasElement.height = NUM_SAMPLE;
@@ -243,9 +248,10 @@ function sampleImage(src, numSample, code){/*
 			var point = getPointN(pStart, pEnd, x, numSample);
 			var pixel = src.getImageData(point.x, point.y, w, h);
 			var idx = pos2idx(x, y, 0, numSample);
-			image.data[idx + 0] = pixel.data[0];
-			image.data[idx + 1] = pixel.data[1];
-			image.data[idx + 2] = pixel.data[2];
+			copyElements(pixel.data, image.data, 0, idx, 3);
+			//image.data[idx + 0] = pixel.data[0];
+			//image.data[idx + 1] = pixel.data[1];
+			//image.data[idx + 2] = pixel.data[2];
 			image.data[idx + 3] = 255;
 		}
 	}
@@ -287,6 +293,7 @@ function sampleGrayImage(src, numSample, code){/*
 	}
 	return grayImage;
 }
+
 function getBinImage(imgData, clrThreshold){/*
 	imgDataの画像をclrThresholdに従って2値化する。
 */
@@ -320,7 +327,19 @@ function getBinImage(imgData, clrThreshold){/*
 	}
 	return binImg;
 }
-
+function sharpenImageGray(grayImageData) {/*
+	先鋭化フィルタを入れる。
+	var w = grayImageData.width;
+	var h = grayImageData.height;
+	var image = new ImageData(w, h);
+	for(y = 0; y < h; y++){
+		idx = pos2idx(0, y, 0, w);
+		image.data[idx + 0] = grayImageData.data[idx + 0];
+		image.data[idx + 1] = grayImageData.data[idx + 1];
+		image.data[idx + 2] = grayImageData.data[idx + 2];
+		image.data[idx + 3] = grayImageData.data[idx + 3];
+*/
+}
 function getLengthFinderPattern(binImage, posPattern) {
 	// ファインダーパターンの長さを求める。
 	// binImage 2値化したQRコードの画像
@@ -372,3 +391,4 @@ function getLengthFinderPattern(binImage, posPattern) {
 	//console.log(sumLength);
 	return sumLength;
 }
+
