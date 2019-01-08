@@ -129,9 +129,11 @@ function enjoy(code, imageData) {
 	grayCanvasElement.height = NUM_SAMPLE;
 	grayCanvasElement.width = NUM_SAMPLE;
 	var grayImageData = sampleGrayImage(canvas, NUM_SAMPLE, code);
-	grayCanvas.putImageData(grayImageData, 0, 0);
+	//grayCanvas.putImageData(grayImageData, 0, 0);
 	var sharpedGrayImageData = sharpenImageGray(grayImageData);
-	var grayThreshold = getOneThreshold(grayImageData, 0);
+	grayCanvas.putImageData(sharpedGrayImageData, 0, 0);
+	//var grayThreshold = getOneThreshold(grayImageData, 0);
+	var grayThreshold = getOneThreshold(sharpedGrayImageData, 0);
 	var th = {r:grayThreshold, g:grayThreshold, b:grayThreshold};
 	//2値化画像を求める。
 	binImage = getBinImage(grayImageData, th);
@@ -195,7 +197,7 @@ function getTrimQRbinImage(srcImageData, code){/*
 			var green = srcImageData.data[idx + 1];
 			var blue = srcImageData.data[idx + 2];
 			var gray = Math.round((red * 299 + green * 587 + blue * 114) / 1000);
-			copyElements(trimImageData.data, srcImageData.data, idx, idx, 3);
+			copyElements(srcImageData.data, trimImageData.data, idx, idx, 3);
 			trimImageData.data[idx + 3] = 255;
 			hist[Math.round(gray)]++;
 			//console.log("x:%d, y:%d, idx:%d, r:%d g:%d b:%d c:%d", x, y, idx, red, blue, green, gray);
@@ -314,16 +316,41 @@ function getBinImage(imgData, clrThreshold){/*
 }
 function sharpenImageGray(grayImageData) {/*
 	先鋭化フィルタを入れる。
+	grayImageData: 対象とするImageData(グレースケール)
+	*/
 	var w = grayImageData.width;
 	var h = grayImageData.height;
 	var image = new ImageData(w, h);
+	//端っこはそのままとする。
 	for(y = 0; y < h; y++){
 		idx = pos2idx(0, y, 0, w);
-		image.data[idx + 0] = grayImageData.data[idx + 0];
-		image.data[idx + 1] = grayImageData.data[idx + 1];
-		image.data[idx + 2] = grayImageData.data[idx + 2];
-		image.data[idx + 3] = grayImageData.data[idx + 3];
-*/
+		copyElements(grayImageData.data, image.data, idx, idx, 4);
+		idx = pos2idx(w - 1, y, 0, w);
+		copyElements(grayImageData.data, image.data, idx, idx, 4);
+	}
+	for(x = 0; x < w; x++){
+		idx = pos2idx(x, 0, 0, w);
+		copyElements(grayImageData.data, image.data, idx, idx, 4);
+		idx = pos2idx(x, h - 1, 0, w);
+		copyElements(grayImageData.data, image.data, idx, idx, 4);
+	}
+	for(y = 1; y < (h - 1); y++){
+		for(x = 1; x < (w - 1); x++){
+			idx = pos2idx(x, y, 0, w);
+			var val = 10 * grayImageData.data[idx];
+			for(v = -1; v <= 1; v++){
+				var y2 = y + v;
+				for(u = -1; u <= 1; u++){
+					var x2 = x + u;
+					var idx2 = pos2idx(x2, y2, 0, w);
+					val -= grayImageData.data[idx2];
+				}
+			}
+			writeElements(val, image.data, idx, 3);
+			image.data[idx + 3] = 255;
+		}
+	}
+	return image;
 }
 function getLengthFinderPattern(binImage, posPattern) {
 	// ファインダーパターンの長さを求める。
