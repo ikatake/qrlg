@@ -195,9 +195,7 @@ function getTrimQRbinImage(srcImageData, code){/*
 			var green = srcImageData.data[idx + 1];
 			var blue = srcImageData.data[idx + 2];
 			var gray = Math.round((red * 299 + green * 587 + blue * 114) / 1000);
-			trimImageData.data[idx + 0] = red;
-			trimImageData.data[idx + 1] = green;
-			trimImageData.data[idx + 2] = blue;
+			copyElements(trimImageData.data, srcImageData.data, idx, idx, 3);
 			trimImageData.data[idx + 3] = 255;
 			hist[Math.round(gray)]++;
 			//console.log("x:%d, y:%d, idx:%d, r:%d g:%d b:%d c:%d", x, y, idx, red, blue, green, gray);
@@ -210,13 +208,9 @@ function getTrimQRbinImage(srcImageData, code){/*
 			var idx = pos2idx(x, y, 0, w);
 			var gray = srcImageData.data[idx + 0];
 			if(gray > tMaxVarBC){
-				trimImageData.data[idx + 0] = 255;
-				trimImageData.data[idx + 1] = 255;
-				trimImageData.data[idx + 2] = 255;
+				writeElements(255, trimImageData.data, idx, 3);
 			} else {
-				trimImageData.data[idx + 0] = 0;
-				trimImageData.data[idx + 1] = 0;
-				trimImageData.data[idx + 2] = 0;
+				writeElements(0, trimImageData.data, idx, 3);
 			}
 		}
 	}
@@ -249,9 +243,6 @@ function sampleImage(src, numSample, code){/*
 			var pixel = src.getImageData(point.x, point.y, w, h);
 			var idx = pos2idx(x, y, 0, numSample);
 			copyElements(pixel.data, image.data, 0, idx, 3);
-			//image.data[idx + 0] = pixel.data[0];
-			//image.data[idx + 1] = pixel.data[1];
-			//image.data[idx + 2] = pixel.data[2];
 			image.data[idx + 3] = 255;
 		}
 	}
@@ -285,9 +276,7 @@ function sampleGrayImage(src, numSample, code){/*
 			var data = pixel.data;
 			var idx = pos2idx(x, y, 0, numSample);
 			var gray = Math.round((data[0] * 299 + data[1] * 587 + data[2] * 114) / 1000);
-			grayImage.data[idx + 0] = gray;
-			grayImage.data[idx + 1] = gray;
-			grayImage.data[idx + 2] = gray;
+			writeElements(gray, grayImage.data, idx, 3);
 			grayImage.data[idx + 3] = 255;
 		}
 	}
@@ -314,13 +303,9 @@ function getBinImage(imgData, clrThreshold){/*
 				num++;
 			}
 			if(num >= 2){
-				binImg.data[idx + 0] = 255;
-				binImg.data[idx + 1] = 255;
-				binImg.data[idx + 2] = 255;
+				writeElements(255, binImg.data, idx, 3); //white
 			} else {
-				binImg.data[idx + 0] = 0;
-				binImg.data[idx + 1] = 0;
-				binImg.data[idx + 2] = 0;
+				writeElements(0, binImg.data, idx, 3); //black
 			}
 			binImg.data[idx + 3] = 255;
 		}
