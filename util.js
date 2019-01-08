@@ -57,6 +57,8 @@ len:長さ
 */
 	for( i = 0; i < len; i++){
 		if(dst[i + idxDst] == undefined){
+			continue;
+		}
 		dst[i + idxDst] = val;
 	}
 	return i;
