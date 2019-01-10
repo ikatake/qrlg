@@ -33,10 +33,14 @@ function funcOnLoad() {
 	trimCanvas = trimCanvasElement.getContext("2d");
 	sampCanvasElement = document.getElementById("sampCanvas");
 	sampCanvas = sampCanvasElement.getContext("2d");
+	sharpenCanvasElement = document.getElementById("sharpenCanvas");
+	sharpenCanvas = sharpenCanvasElement.getContext("2d");
 	binCanvasElement = document.getElementById("binCanvas");
 	binCanvas = binCanvasElement.getContext("2d");
 	grayCanvasElement = document.getElementById("grayCanvas");
 	grayCanvas = grayCanvasElement.getContext("2d");
+	sharpenGrayCanvasElement = document.getElementById("sharpenGrayCanvas");
+	sharpenGrayCanvas = sharpenGrayCanvasElement.getContext("2d");
 	qrCanvasElement = document.getElementById("qrCanvas");
 	qrCanvas = qrCanvasElement.getContext("2d");
 	loadingMessage = document.getElementById("loadingMessage");
@@ -129,9 +133,12 @@ function enjoy(code, imageData) {
 	grayCanvasElement.height = NUM_SAMPLE;
 	grayCanvasElement.width = NUM_SAMPLE;
 	var grayImageData = sampleGrayImage(canvas, NUM_SAMPLE, code);
-	//grayCanvas.putImageData(grayImageData, 0, 0);
+	grayCanvas.putImageData(grayImageData, 0, 0);
+	sharpenGrayCanvasElement.hidden = false;
+	sharpenGrayCanvasElement.height = NUM_SAMPLE;
+	sharpenGrayCanvasElement.width = NUM_SAMPLE;
 	var sharpedGrayImageData = sharpenImageGray(grayImageData);
-	grayCanvas.putImageData(sharpedGrayImageData, 0, 0);
+	sharpenGrayCanvas.putImageData(sharpedGrayImageData, 0, 0);
 	//var grayThreshold = getOneThreshold(grayImageData, 0);
 	var grayThreshold = getOneThreshold(sharpedGrayImageData, 0);
 	var th = {r:grayThreshold, g:grayThreshold, b:grayThreshold};
@@ -203,6 +210,9 @@ function getTrimQRbinImage(srcImageData, code){/*
 			//console.log("x:%d, y:%d, idx:%d, r:%d g:%d b:%d c:%d", x, y, idx, red, blue, green, gray);
 		}
 	}
+	var sharpenTrimImageData = new ImageData(srcImageData.width, srcImageData.height);
+	sharpenTrimImageData = sharpenImageGray(trimImageData);
+	/*
 	//判別分析法を用いてしきい値を求める。
 	var tMaxVarBC = getMaxVarianceBetweenClass(hist);
 	for(y = top; y <= bottom; y++){
@@ -216,7 +226,9 @@ function getTrimQRbinImage(srcImageData, code){/*
 			}
 		}
 	}
-	return trimImageData;
+	*/
+	//return trimImageData;
+	return sharpenTrimImageData;
 }
 function sampleImage(src, numSample, code){/* 
 	jsqrの出力に従ってカメラの画像からQRコード部分をサンプリングする。
