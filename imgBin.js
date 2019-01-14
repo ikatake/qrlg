@@ -24,8 +24,8 @@ function getOneThreshold(imgData, numClr){
 	w = imgData.width;
 	h = imgData.height;
 	//ヒストグラムを作成する。
-	for(y = 0; y < h; y++){
-		for(x = 0; x < w; x++){
+	for(let y = 0; y < h; y++){
+		for(let x = 0; x < w; x++){
 			var idx = pos2idx(x ,y, numClr, w);
 			var c = imgData.data[idx];
 			hist[Math.round(c)]++;
@@ -41,14 +41,14 @@ histgram: 単色のヒストグラムを示す整数型配列(要素数256個)
 	//判別分析法を用いてしきい値を求める。
 	var maxVarBC = 0.0; //最大のクラス間分散
 	var tMaxVarBC = 0;
-	for(t = 0; t < 256; t++){
+	for(let t = 0; t < 256; t++){
 		var w1 = 0;//画素数ω
 		var w2 = 0;
 		var sum1 = 0;//合計値
 		var sum2 = 0;
 		var m1 = 0.0;//平均
 		var m2 = 0.0;
-		for(i = 0; i < t; i++){
+		for(let i = 0; i < t; i++){
 			w1 += histgram[i];
 			sum1 += histgram[i] * i;
 		}
@@ -56,7 +56,7 @@ histgram: 単色のヒストグラムを示す整数型配列(要素数256個)
 			continue;
 		}
 		m1 = sum1 / w1;
-		for(i = t; i < 256; i++){
+		for(let i = t; i < 256; i++){
 			w2 += histgram[i];
 			sum2 += histgram[i] * i
 		}
