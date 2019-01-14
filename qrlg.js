@@ -157,10 +157,10 @@ function enjoy(code, imageData) {
 	qrCanvasElement.hidden = false;
 	qrCanvasElement.height = NUM_SAMPLE;
 	qrCanvasElement.width = NUM_SAMPLE;
-	for(i = 0; i < NUM_MODULE; i++) {
+	for(let i = 0; i < NUM_MODULE; i++) {
 		yPick = Math.round( (i + 0.5) * SIZE_MODULE );
 		yRect0 = Math.round( i * SIZE_MODULE );
-		for(j = 0; j < NUM_MODULE; j++) {
+		for(let j = 0; j < NUM_MODULE; j++) {
 			xPick = Math.round( (j + 0.5) * SIZE_MODULE );
 			xRect0 = Math.round( j * SIZE_MODULE );
 			var index = (xPick + yPick * NUM_SAMPLE) * 4;
@@ -197,8 +197,8 @@ function getTrimQRbinImage(srcImageData, code){/*
 	var w = srcImageData.width;
 	var hist = new Array(256);
 	hist.fill(0);
-	for(y = top; y <= bottom; y++){
-		for(x = left; x <= right; x++){
+	for(let y = top; y <= bottom; y++){
+		for(let x = left; x <= right; x++){
 			var idx = pos2idx(x, y, 0, w);
 			var red = srcImageData.data[idx + 0];
 			var green = srcImageData.data[idx + 1];
@@ -215,8 +215,8 @@ function getTrimQRbinImage(srcImageData, code){/*
 	/*
 	//判別分析法を用いてしきい値を求める。
 	var tMaxVarBC = getMaxVarianceBetweenClass(hist);
-	for(y = top; y <= bottom; y++){
-		for(x = left; x <= right; x++){
+	for(let y = top; y <= bottom; y++){
+		for(let x = left; x <= right; x++){
 			var idx = pos2idx(x, y, 0, w);
 			var gray = srcImageData.data[idx + 0];
 			if(gray > tMaxVarBC){
@@ -237,26 +237,18 @@ function sampleImage(src, numSample, code){/*
 	code:jsqrの読込結果
 	*/
 	var image = new ImageData(numSample, numSample);
-	for(y = 0; y < numSample; y++){
+	for(let y = 0; y < numSample; y++){
 		pStart = getPointN( code.location.topLeftCorner,  code.location.bottomLeftCorner, y, numSample);
 		pEnd = getPointN( code.location.topRightCorner,  code.location.bottomRightCorner, y, numSample);
-		h = (pEnd.y - pStart.y) / numSample;
-		w = (pEnd.x - pStart.x) / numSample;
-		if(h >= 0){
-			h = max(1, h);
-		} else {
-			h = min(-1, h);
-		}
-		if(w >= 0){
-			w = max(1, w);
-		} else {
-			w = min(-1, w);
-		}
-		for(x = 0; x < numSample; x++){
+		for(let x = 0; x < numSample; x++){
 			var point = getPointN(pStart, pEnd, x, numSample);
-			var pixel = src.getImageData(point.x, point.y, w, h);
+			var pixels4x4 = src.getImageData(
+				Math.floor(point.x) - 1, Math.floor(point.y) - 1, 4, 4);
+			var color = getColorBicubic(pixels4x4, point.x, point.y, -1.0)
 			var idx = pos2idx(x, y, 0, numSample);
-			copyElements(pixel.data, image.data, 0, idx, 3);
+			image.data[idx + 0] = color.r;
+			image.data[idx + 1] = color.g;
+			image.data[idx + 2] = color.b;
 			image.data[idx + 3] = 255;
 		}
 	}
@@ -269,27 +261,16 @@ function sampleGrayImage(src, numSample, code){/*
 	code:jsqrの読込結果
 	*/
 	var grayImage = new ImageData(numSample, numSample);
-	for(y = 0; y < numSample; y++){
+	for(let y = 0; y < numSample; y++){
 		pStart = getPointN( code.location.topLeftCorner,  code.location.bottomLeftCorner, y, numSample);
 		pEnd = getPointN( code.location.topRightCorner,  code.location.bottomRightCorner, y, numSample);
-		h = (pEnd.y - pStart.y) / numSample;
-		w = (pEnd.x - pStart.x) / numSample;
-		if(h >= 0){
-			h = max(1, h);
-		} else {
-			h = min(-1, h);
-		}
-		if(w >= 0){
-			w = max(1, w);
-		} else {
-			w = min(-1, w);
-		}
-		for(x = 0; x < numSample; x++){
+		for(let x = 0; x < numSample; x++){
 			var point = getPointN(pStart, pEnd, x, numSample);
-			var pixel = canvas.getImageData(point.x, point.y, 1, 1);
-			var data = pixel.data;
+			var pixels4x4 = src.getImageData(
+				Math.floor(point.x) - 1, Math.floor(point.y) - 1, 4, 4);
+			var color = getColorBicubic(pixels4x4, point.x, point.y, -1.0)
 			var idx = pos2idx(x, y, 0, numSample);
-			var gray = Math.round((data[0] * 299 + data[1] * 587 + data[2] * 114) / 1000);
+			var gray = Math.round((color.r * 299 + color.g * 587 + color.b* 114) / 1000);
 			writeElements(gray, grayImage.data, idx, 3);
 			grayImage.data[idx + 3] = 255;
 		}
@@ -303,8 +284,8 @@ function getBinImage(imgData, clrThreshold){/*
 	var w = imgData.width;
 	var h = imgData.height;
 	var binImg = new ImageData(imgData.width, imgData.height);
-	for( y = 0; y < h; y++){
-		for( x = 0; x < w; x++){
+	for(let y = 0; y < h; y++){
+		for(let x = 0; x < w; x++){
 			var idx = pos2idx(x, y, 0, w);
 			var num = 0;
 			if(imgData.data[idx + 0] > clrThreshold.r){
@@ -334,25 +315,25 @@ function sharpenImageGray(grayImageData) {/*
 	var h = grayImageData.height;
 	var image = new ImageData(w, h);
 	//端っこはそのままとする。
-	for(y = 0; y < h; y++){
+	for(let y = 0; y < h; y++){
 		idx = pos2idx(0, y, 0, w);
 		copyElements(grayImageData.data, image.data, idx, idx, 4);
 		idx = pos2idx(w - 1, y, 0, w);
 		copyElements(grayImageData.data, image.data, idx, idx, 4);
 	}
-	for(x = 0; x < w; x++){
+	for(let x = 0; x < w; x++){
 		idx = pos2idx(x, 0, 0, w);
 		copyElements(grayImageData.data, image.data, idx, idx, 4);
 		idx = pos2idx(x, h - 1, 0, w);
 		copyElements(grayImageData.data, image.data, idx, idx, 4);
 	}
-	for(y = 1; y < (h - 1); y++){
-		for(x = 1; x < (w - 1); x++){
+	for(let y = 1; y < (h - 1); y++){
+		for(let x = 1; x < (w - 1); x++){
 			idx = pos2idx(x, y, 0, w);
 			var val = 10 * grayImageData.data[idx];
-			for(v = -1; v <= 1; v++){
+			for(let v = -1; v <= 1; v++){
 				var y2 = y + v;
-				for(u = -1; u <= 1; u++){
+				for(let u = -1; u <= 1; u++){
 					var x2 = x + u;
 					var idx2 = pos2idx(x2, y2, 0, w);
 					val -= grayImageData.data[idx2];
@@ -371,7 +352,7 @@ function getLengthFinderPattern(binImage, posPattern) {
 	var mode = 0;
 	var sumLength = 0;
 	var width = binImage.width;
-	for(i = 0; i < width; i++) {
+	for(let i = 0; i < width; i++) {
 		var index = 0;
 		if (posPattern == 1) {/*左上から右下に移動*/
 			index = (i + i * width ) * 4; /*(i,i)*/
