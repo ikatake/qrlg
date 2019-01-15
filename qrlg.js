@@ -134,17 +134,16 @@ function enjoy(code, imageData) {
 	grayCanvasElement.width = NUM_SAMPLE;
 	var grayImageData = sampleGrayImage(canvas, NUM_SAMPLE, code);
 	grayCanvas.putImageData(grayImageData, 0, 0);
-	sharpenGrayCanvasElement.hidden = false;
-	sharpenGrayCanvasElement.height = NUM_SAMPLE;
-	sharpenGrayCanvasElement.width = NUM_SAMPLE;
-	var sharpedGrayImageData = sharpenImageGray(grayImageData);
-	sharpenGrayCanvas.putImageData(sharpedGrayImageData, 0, 0);
-	//var grayThreshold = getOneThreshold(grayImageData, 0);
-	var grayThreshold = getOneThreshold(sharpedGrayImageData, 0);
+	//sharpenGrayCanvasElement.hidden = false;
+	//sharpenGrayCanvasElement.height = NUM_SAMPLE;
+	//sharpenGrayCanvasElement.width = NUM_SAMPLE;
+	//var sharpedGrayImageData = sharpenImageGray(grayImageData);
+	//sharpenGrayCanvas.putImageData(sharpedGrayImageData, 0, 0);
+	var grayThreshold = getOneThreshold(grayImageData, 0);
+	//var grayThreshold = getOneThreshold(sharpedGrayImageData, 0);
 	var th = {r:grayThreshold, g:grayThreshold, b:grayThreshold};
 	//2値化画像を求める。
 	binImage = getBinImage(grayImageData, th);
-
 	binCanvasElement.hidden = false;
 	binCanvasElement.height = NUM_SAMPLE;
 	binCanvasElement.width = NUM_SAMPLE;
