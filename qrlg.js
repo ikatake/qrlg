@@ -4,14 +4,6 @@ window.onload = funcOnLoad;
 var video;
 var canvasElement;
 var canvas;
-var trimCanvasElement;
-var trimCanvas;
-var sampCanvasElement;
-var sampCanvas;
-var binCanvasElement;
-var binCanvas;
-var grayCanvasElement;
-var grayCanvas;
 var qrCanvasElement;
 var qrCanvas;
 var loadingMessage;
@@ -24,23 +16,12 @@ var firstData = "";
 const RATIO_ENLARGE = 2.0;
 const RATIO_SHARE = 0.5;
 const SIZE_CODE = 250.0;
+const IMG_SIZE_MAX = 600.0;
 
 function funcOnLoad() {
 	video = document.createElement("video");
 	canvasElement = document.getElementById("canvas");
 	canvas = canvasElement.getContext("2d");
-	trimCanvasElement = document.getElementById("trimCanvas");
-	trimCanvas = trimCanvasElement.getContext("2d");
-	sampCanvasElement = document.getElementById("sampCanvas");
-	sampCanvas = sampCanvasElement.getContext("2d");
-	sharpenCanvasElement = document.getElementById("sharpenCanvas");
-	sharpenCanvas = sharpenCanvasElement.getContext("2d");
-	binCanvasElement = document.getElementById("binCanvas");
-	binCanvas = binCanvasElement.getContext("2d");
-	grayCanvasElement = document.getElementById("grayCanvas");
-	grayCanvas = grayCanvasElement.getContext("2d");
-	sharpenGrayCanvasElement = document.getElementById("sharpenGrayCanvas");
-	sharpenGrayCanvas = sharpenGrayCanvasElement.getContext("2d");
 	qrCanvasElement = document.getElementById("qrCanvas");
 	qrCanvas = qrCanvasElement.getContext("2d");
 	loadingMessage = document.getElementById("loadingMessage");
@@ -95,7 +76,7 @@ function tick() {
 				var width = point.right - point.left;
 				var height = point.bottom - point.top;
 				if( ( ( width > SIZE_CODE ) && ( height > SIZE_CODE ) ) || ( ( width > ( RATIO_SHARE * video.videoWidth ) ) && ( height > (RATIO_SHARE * video.videoHeight ) ) ) ) {
-					enjoy(code, imageData);
+					enjoy(code.binaryMatrix);
 					return;
 				}
 			}
@@ -107,24 +88,27 @@ function tick() {
 	}
 	requestAnimationFrame(tick);
 }
-function enjoy(code, imageData) {
+function enjoy(binaryMatrix) {
 	qrCanvasElement.hidden = false;
-	qrCanvasElement.height = NUM_SAMPLE;
-	qrCanvasElement.width = NUM_SAMPLE;
-	for(let i = 0; i < NUM_MODULE; i++) {
-		yPick = Math.round( (i + 0.5) * SIZE_MODULE );
-		yRect0 = Math.round( i * SIZE_MODULE );
-		for(let j = 0; j < NUM_MODULE; j++) {
-			xPick = Math.round( (j + 0.5) * SIZE_MODULE );
-			xRect0 = Math.round( j * SIZE_MODULE );
-			var index = (xPick + yPick * NUM_SAMPLE) * 4;
-			var clrPick = binImage.data[index];
-			binImage.data[index + 0] = 255;
-			binImage.data[index + 1] = 0;
-			binImage.data[index + 2] = 0;
-			qrCanvas.fillStyle = "rgba(" + clrPick + "," + clrPick + "," + clrPick + ",1)";
-			qrCanvas.fillRect(xRect0, yRect0, SIZE_MODULE, SIZE_MODULE);
-			//lgArr[ i + NUM_SAMPLE * j ] = clrPick / 255;
+	//縦と横の長い方を取る。
+	maxSizeMatrix = max(binaryMatrix.height, binaryMatrix.width);
+	//最大のキャンバスサイズを長辺長さで割って、1セルのサイズを出す。
+	sizeCell = Math.floor( IMG_SIZE_MAX / maxSizeMatrix );
+	//キャンバスのサイズを求める。
+	qrCanvasElement.height = binaryMatrix.height * sizeCell;
+	qrCanvasElement.width = binaryMatrix.width * sizeCell;
+	for(let y = 0; y < binaryMatrix.height; y++) {
+		var py = y * sizeCell;
+		for(let x = 0; x < binaryMatrix.width; x++) {
+			var px = x * sizeCell;
+			var index = x + y * binaryMatrix.width;
+			if( binaryMatrix.data[index] == 1) {
+				var clr = 0;
+			} else {
+				var clr = 255;
+			}
+			qrCanvas.fillStyle = "rgba(" + clr + "," + clr + "," + clr + ",1)";
+			qrCanvas.fillRect(px, py, sizeCell, sizeCell);
 		}
 	}
 }
