@@ -75,10 +75,13 @@ function tick() {
 				var point = calcPointCode(code);
 				var width = point.right - point.left;
 				var height = point.bottom - point.top;
+				enjoy(code.binaryMatrix);
+				/*
 				if( ( ( width > SIZE_CODE ) && ( height > SIZE_CODE ) ) || ( ( width > ( RATIO_SHARE * video.videoWidth ) ) && ( height > (RATIO_SHARE * video.videoHeight ) ) ) ) {
 					enjoy(code.binaryMatrix);
 					return;
 				}
+					*/
 			}
 		}
 		else {
