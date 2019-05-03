@@ -339,7 +339,7 @@ function scan(matrix) {
         return null;
     }
     return {
-        binaryMatrix: extracted.Matrix, //Add return value.
+        binaryMatrix: extracted.matrix, //Add return value.
         binaryData: decoded.bytes,
         data: decoded.text,
         chunks: decoded.chunks,
