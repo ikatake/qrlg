@@ -3,7 +3,7 @@
 const ALIVE = true;
 const DEAD = false;
 
-function getCanvasElement(space, canvas, sizeCell) {
+function drawCanvas(space, canvas, sizeCell) {
 	for (let y = 0; y < soace.height; y++) {
 		var py = y * sizeCell;
 		for (let x = 0; x < space.width; x++) {
