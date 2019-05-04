@@ -102,23 +102,16 @@ function enjoy(binaryMatrix) {
 	//キャンバスのサイズを求める。
 	qrCanvasElement.height = binaryMatrix.height * sizeCell;
 	qrCanvasElement.width = binaryMatrix.width * sizeCell;
-	/*
-	for (let y = 0; y < binaryMatrix.height; y++) {
-		var py = y * sizeCell;
-		for (let x = 0; x < binaryMatrix.width; x++) {
-			var px = x * sizeCell;
-			var index = x + y * binaryMatrix.width;
-			if (binaryMatrix.data[index] == 1) {
-				var clr = 0;
-			} else {
-				var clr = 255;
-			}
-			qrCanvas.fillStyle = "rgba(" + clr + "," + clr + "," + clr + ",1)";
-			qrCanvas.fillRect(px, py, sizeCell, sizeCell);
-		}
-	}
-	*/
 	var space = getInitialSpace(binaryMatrix);
 	drawCanvas(space, qrCanvas, sizeCell);
+	for(let i = 0; i < 10; i++) {
+		getNextGeneration(space);
+		drawCanvas(space, qrCanvas, sizeCell);
+
+	}
 }
+
+//async function loop(space, canvas, sizeCell){
+	
+
 
