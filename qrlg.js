@@ -1,4 +1,5 @@
 //qrlg.js
+"use strict"
 window.onload = funcOnLoad;
 
 var video;
@@ -76,6 +77,7 @@ function tick() {
 				var width = point.right - point.left;
 				var height = point.bottom - point.top;
 				enjoy(code.binaryMatrix);
+				return;
 				/*
 				if( ( ( width > SIZE_CODE ) && ( height > SIZE_CODE ) ) || ( ( width > ( RATIO_SHARE * video.videoWidth ) ) && ( height > (RATIO_SHARE * video.videoHeight ) ) ) ) {
 					enjoy(code.binaryMatrix);
@@ -94,12 +96,13 @@ function tick() {
 function enjoy(binaryMatrix) {
 	qrCanvasElement.hidden = false;
 	//縦と横の長い方を取る。
-	maxSizeMatrix = max(binaryMatrix.height, binaryMatrix.width);
+	var maxSizeMatrix = max(binaryMatrix.height, binaryMatrix.width);
 	//最大のキャンバスサイズを長辺長さで割って、1セルのサイズを出す。
-	sizeCell = Math.floor( IMG_SIZE_MAX / maxSizeMatrix );
+	var sizeCell = Math.floor( IMG_SIZE_MAX / maxSizeMatrix );
 	//キャンバスのサイズを求める。
 	qrCanvasElement.height = binaryMatrix.height * sizeCell;
 	qrCanvasElement.width = binaryMatrix.width * sizeCell;
+	/*
 	for (let y = 0; y < binaryMatrix.height; y++) {
 		var py = y * sizeCell;
 		for (let x = 0; x < binaryMatrix.width; x++) {
@@ -114,7 +117,8 @@ function enjoy(binaryMatrix) {
 			qrCanvas.fillRect(px, py, sizeCell, sizeCell);
 		}
 	}
+	*/
 	var space = getInitialSpace(binaryMatrix);
-	drawCanvas(space, qrCanvas, sizeCel)
+	drawCanvas(space, qrCanvas, sizeCell);
 }
 

@@ -1,10 +1,9 @@
 //drawStates.js
 //lifegameの描画関係
-const ALIVE = true;
-const DEAD = false;
+'use strict'
 
 function drawCanvas(space, canvas, sizeCell) {
-	for (let y = 0; y < soace.height; y++) {
+	for (let y = 0; y < space.height; y++) {
 		var py = y * sizeCell;
 		for (let x = 0; x < space.width; x++) {
 			var px = x * sizeCell;
