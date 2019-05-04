@@ -100,12 +100,12 @@ function enjoy(binaryMatrix) {
 	//キャンバスのサイズを求める。
 	qrCanvasElement.height = binaryMatrix.height * sizeCell;
 	qrCanvasElement.width = binaryMatrix.width * sizeCell;
-	for(let y = 0; y < binaryMatrix.height; y++) {
+	for (let y = 0; y < binaryMatrix.height; y++) {
 		var py = y * sizeCell;
-		for(let x = 0; x < binaryMatrix.width; x++) {
+		for (let x = 0; x < binaryMatrix.width; x++) {
 			var px = x * sizeCell;
 			var index = x + y * binaryMatrix.width;
-			if( binaryMatrix.data[index] == 1) {
+			if (binaryMatrix.data[index] == 1) {
 				var clr = 0;
 			} else {
 				var clr = 255;
@@ -114,5 +114,7 @@ function enjoy(binaryMatrix) {
 			qrCanvas.fillRect(px, py, sizeCell, sizeCell);
 		}
 	}
+	var space = getInitialSpace(binaryMatrix);
+	drawCanvas(space, qrCanvas, sizeCel)
 }
 
