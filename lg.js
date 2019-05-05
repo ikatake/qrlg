@@ -15,6 +15,7 @@ function getNextGeneration(space) {
 		}
 	}
 	nextSpace.states = states;
+	nextSpace.generation = space.generation + 1;
 	return nextSpace;
 }
 function getNextState(px, py, space){
@@ -45,7 +46,7 @@ function getNextState(px, py, space){
 		 });
 	});
 	var pindex = px + space.width * py;
-	if (space.states[pindex] == ALIVE) {
+	if (space.states[pindex] == DEAD) {
 		if (countLive == 3) {
 			return ALIVE;
 		} else {
@@ -75,6 +76,7 @@ function getInitialSpace(binaryMatrix) {
 		}
 	}
 	space.states = states;
+	space.generation = 0;
 	return space;
 }
 

@@ -14,10 +14,16 @@ var outputData;
 var firstWidth = 0;
 var firstHeight = 0;
 var firstData = "";
+var space = {};
+var sizeCell = 0;
 const RATIO_ENLARGE = 2.0;
 const RATIO_SHARE = 0.5;
 const SIZE_CODE = 250.0;
 const IMG_SIZE_MAX = 600.0;
+const TEXT_HEIGHT = 30.0;
+const LEN_PAST_STATES = 1000;
+var intervalMilliSec = 1000;
+var tid;
 
 function funcOnLoad() {
 	video = document.createElement("video");
@@ -30,6 +36,7 @@ function funcOnLoad() {
 	outputMessage = document.getElementById("outputMessage");
 	outputData = document.getElementById("outputData");
 	document.onkeydown = interruptKeyBoard;
+//	testfunc();
 }
 function drawLine(begin, end, color) {
 	canvas.beginPath();
@@ -98,24 +105,67 @@ function enjoy(binaryMatrix) {
 	//縦と横の長い方を取る。
 	var maxSizeMatrix = max(binaryMatrix.height, binaryMatrix.width);
 	//最大のキャンバスサイズを長辺長さで割って、1セルのサイズを出す。
-	var sizeCell = Math.floor( IMG_SIZE_MAX / maxSizeMatrix );
+//	var sizeCell = Math.floor( IMG_SIZE_MAX / maxSizeMatrix );
+	sizeCell = Math.floor( IMG_SIZE_MAX / maxSizeMatrix );
 	//キャンバスのサイズを求める。
-	qrCanvasElement.height = binaryMatrix.height * sizeCell;
+	qrCanvasElement.height = binaryMatrix.height * sizeCell + TEXT_HEIGHT;
 	qrCanvasElement.width = binaryMatrix.width * sizeCell;
 	var space = getInitialSpace(binaryMatrix);
+	space = getInitialSpace(binaryMatrix);
 	drawCanvas(space, qrCanvas, sizeCell);
-	var tid = setTimeout(loop, 1000, space, canvas, sizeCell);
+	tid = setTimeout(loop, intervalMilliSec, space, canvas, sizeCell);
 }
+
 function loop(space, canvas, sizeCell){
+	if (space.generation == 10) {
+		intervalMilliSec = 100;
+	} else if (space.generation == 100) {
+		intervalMilliSec = 10;
+	} else if (space.generation == 1000) {
+		clearTimeout(tid);
+		return;
+	}
+	var intervalGeneration = checkSamePastState(space, pastStates);
+	if (intervalGeneration == 0) { //該当なし。
+		pastState[space.generation % LEN_APST_STATES] = space.states;
+	} else if (intervalGeneration == 1) {
+		var msg = "frozen.";
+	} else {
+		var msg = "loop " + intervalGeneration + " generations.";
+	}
+	
 	space = getNextGeneration(space);
 	drawCanvas(space, qrCanvas, sizeCell);
-	setTimeout(loop, 1000, space, canvas, sizeCell);
+	setTimeout(loop, intervalMilliSec, space, canvas, sizeCell);
 }
+
 
 function interruptKeyBoard(){
-
+	if (event.key === "ArrowRight") {
+		intervalMilliSec -= 100;
+	}
+	if (event.key === "ArrowLeft") {
+		intervalMilliSec += 100;
+	}
+	if (event.key === "Enter") {
+		space = getNextGeneration(space);
+		drawCanvas(space, qrCanvas, sizeCell);
+	}
 }
-
-
-
+/*
+function testfunc(){
+	space.width = 5;
+	space.height = 5;
+	space.states = [false,	false,	false,	false,	false,
+					false,	false,	false,	false,	false,
+					false,	true,	true,	true,	false,
+					false,	false,	false,	false,	false,
+					false,	false,	false,	false,	false];
+	sizeCell = 100;
+	qrCanvasElement.height = 500;
+	qrCanvasElement.width = 500;
+	qrCanvasElement.hidden = false;
+	drawCanvas(space, qrCanvas, sizeCell);
+}
+*/
 
