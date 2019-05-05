@@ -38,13 +38,14 @@ function getNextState(px, py, space){
 	[north, py, south].forEach(function(y) {
 		 [west, px, east].forEach(function(x) {
 			let index = x + space.width * y;
-			if ( (px != x) && (py != y) && (space.states[index] == ALIVE) ) {
+			if ( (!( (px == x) && (py == y) ) ) && (space.states[index] == ALIVE) ) {
+				/*自セル以外で生きている数を数える。*/
 				countLive++;
 			}
 		 });
 	});
-	var index = px + space.width * py;
-	if (space.states[index] == ALIVE) {
+	var pindex = px + space.width * py;
+	if (space.states[pindex] == ALIVE) {
 		if (countLive == 3) {
 			return ALIVE;
 		} else {
