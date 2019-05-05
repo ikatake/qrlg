@@ -23,7 +23,7 @@ function drawCanvas(space, canvas, sizeCell) {
 	canvas.textBaseline = "top";
 	canvas.strokeText(space.generation.toString(), 0, space.height * sizeCell);
 }
-function drawEndMesseage(space, canvas, sizeCell, msg) {
+function drawEndMessage(space, canvas, sizeCell, msg) {
 	canvas.fillStyle = "rgba( 255, 255, 255, 1)";
 	canvas.fillRect(0, space.height * sizeCell, space.width * sizeCell, TEXT_HEIGHT);
 	var text = space.generation.toString() + " " + msg;

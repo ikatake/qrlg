@@ -80,3 +80,33 @@ function getInitialSpace(binaryMatrix) {
 	return space;
 }
 
+//過去の状態の配列と比較して同じなら世代間隔を、無ければ0を返す。
+function getIntervalGenerationPast(space, pastStates) {
+	if (space.generation == 0) {
+		return 0;
+	}
+	for (let i = 0; i < pastStates.length; i++) {
+		if (isSameStates(space.states, pastStates[i])) {
+			let result = ( space.generation - i ) % LEN_PAST_STATES;
+			if (result <= 0) {
+				result += LEN_PAST_STATES;
+			}
+			return result;
+		}
+	}
+	return 0;
+}
+
+//2つの状態を比較する。
+function isSameStates(states1, states2) {
+	if (states1.length != states2.length) {
+		return false;
+	}
+	for (let idx = 0; idx < states1.length; idx++) {
+		if (states1[idx] != states2[idx]) {
+			return false;
+		}
+	}
+	return true;
+}
+

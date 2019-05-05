@@ -24,6 +24,7 @@ const TEXT_HEIGHT = 30.0;
 const LEN_PAST_STATES = 1000;
 var intervalMilliSec = 1000;
 var tid;
+var pastStates = [];
 
 function funcOnLoad() {
 	video = document.createElement("video");
@@ -125,13 +126,17 @@ function loop(space, canvas, sizeCell){
 		clearTimeout(tid);
 		return;
 	}
-	var intervalGeneration = checkSamePastState(space, pastStates);
+	var intervalGeneration = getIntervalGenerationPast(space, pastStates);
 	if (intervalGeneration == 0) { //該当なし。
-		pastState[space.generation % LEN_APST_STATES] = space.states;
+		pastStates[space.generation % LEN_PAST_STATES] = space.states;
 	} else if (intervalGeneration == 1) {
 		var msg = "frozen.";
+		drawEndMessage(space, qrCanvas, sizeCell, msg);
+		return;
 	} else {
 		var msg = "loop " + intervalGeneration + " generations.";
+		drawEndMessage(space, qrCanvas, sizeCell, msg);
+		return;
 	}
 	
 	space = getNextGeneration(space);
