@@ -29,7 +29,7 @@ function funcOnLoad() {
 	outputContainer = document.getElementById("output");
 	outputMessage = document.getElementById("outputMessage");
 	outputData = document.getElementById("outputData");
-
+	document.onkeydown = interruptKeyBoard;
 }
 function drawLine(begin, end, color) {
 	canvas.beginPath();
@@ -104,14 +104,18 @@ function enjoy(binaryMatrix) {
 	qrCanvasElement.width = binaryMatrix.width * sizeCell;
 	var space = getInitialSpace(binaryMatrix);
 	drawCanvas(space, qrCanvas, sizeCell);
-	for(let i = 0; i < 10; i++) {
-		getNextGeneration(space);
-		drawCanvas(space, qrCanvas, sizeCell);
-
-	}
+	var tid = setTimeout(loop, 1000, space, canvas, sizeCell);
+}
+function loop(space, canvas, sizeCell){
+	space = getNextGeneration(space);
+	drawCanvas(space, qrCanvas, sizeCell);
+	setTimeout(loop, 1000, space, canvas, sizeCell);
 }
 
-//async function loop(space, canvas, sizeCell){
-	
+function interruptKeyBoard(){
+
+}
+
+
 
 
