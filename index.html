@@ -10,24 +10,21 @@
 	<meta property="og:title" content="QRcode lifegame" /> 
 	<meta property="og:description" content="qrcode lifegame" /> 
 	<meta property="og:image" content="https://www.wetsteam.org/lifegamebot/gifs/00003627.gif" />
-	<title>jsQR Demo</title>
+	<title>QRコードがライフゲームをすると楽しい！</title>
 	<script src="./jsQR.js"></script>
 	<script src="./qrlg.js"></script>
 	<script src="./util.js"></script>
-	<script src="./imgBin.js"></script>
-	<script src="./imgResamp.js"></script>
 	<script src="./lg.js"></script>
 	<script src="./drawStates.js"></script>
 	<link href="https://fonts.googleapis.com/css?family=Ropa+Sans" rel="stylesheet">
 	<style>
 		body {
-			font-family: 'Ropa Sans', sans-serif;
 			color: #333;
-			max-width: 640px;
+			max-width: 500px;
 			margin: 0 auto;
 			position: relative;
 		}
-
+	/*
 		#githubLink {
 			position: absolute;
 			right: 0;
@@ -65,24 +62,17 @@
 		#noQRFound {
 			text-align: center;
 		}
+		*/
 	</style>
 </head>
 <body>
-	<h1>jsQR Demo</h1>
-	<a id="githubLink" href="https://github.com/cozmo/jsQR">View documentation on Github</a>
-	<p>Pure JavaScript QR code decoding library.</p>
-	<div id="loadingMessage">🎥 Unable to access video stream (please make sure you have a webcam enabled)</div>
+	<h1>QRコードでライフゲームができると嬉しい！</h1>
+	<div id="loadingMessage">動画にアクセスできません。(一度更新すると調子が良くなることがあります。)</div>
 	<canvas id="canvas" hidden></canvas>
 	<div id="output" hidden>
-		<div id="outputMessage">No QR code detected.</div>
+		<div id="outputMessage">QRコード未検出です。</div>
 		<div hidden><b>Data:</b> <span id="outputData"></span></div>
 	</div>
-	<canvas id="trimCanvas" hidden></canvas>
-	<canvas id="sampCanvas" hidden></canvas>
-	<canvas id="sharpenCanvas" hidden></canvas>
-	<canvas id="grayCanvas" hidden></canvas>
-	<canvas id="sharpenGrayCanvas" hidden></canvas>
-	<canvas id="binCanvas" hidden></canvas>
 	<canvas id="qrCanvas" hidden></canvas>
 </body>
 </html>
