@@ -1,0 +1,45 @@
+body {
+/*	color: #333;*/
+	max-width: 600px;
+	margin: 0 auto;
+/*	position: relative;*/
+	font-family: 'VT323', monospace;
+}
+
+h1 {
+	margin: 0;
+	font-size: 28px;
+	font-family: 'M PLUS 1p', sans-serif;
+}
+
+#loadingMessage {
+	text-align: center;
+	font-family: 'M PLUS 1p', sans-serif;
+/*
+			padding: 40px;
+			background-color: #eee;
+*/
+}
+
+canvas {
+	width: 100%;
+}
+
+#output {
+	margin-top: 20px;
+	background: #eee;
+	padding: 10px;
+	padding-bottom: 0;
+	font-family: 'VT323', monospace;
+}
+
+/*
+		#output div {
+			padding-bottom: 10px;
+			word-wrap: break-word;
+		}
+
+*/
+		#noQRFound {
+			text-align: center;
+		}

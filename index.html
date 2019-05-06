@@ -16,58 +16,12 @@
 	<script src="./util.js"></script>
 	<script src="./lg.js"></script>
 	<script src="./drawStates.js"></script>
-	<link href="https://fonts.googleapis.com/css?family=Ropa+Sans" rel="stylesheet">
-	<style>
-		body {
-			color: #333;
-			max-width: 500px;
-			margin: 0 auto;
-			position: relative;
-		}
-	/*
-		#githubLink {
-			position: absolute;
-			right: 0;
-			top: 12px;
-			color: #2D99FF;
-		}
-
-		h1 {
-			margin: 10px 0;
-			font-size: 40px;
-		}
-
-		#loadingMessage {
-			text-align: center;
-			padding: 40px;
-			background-color: #eee;
-		}
-
-		#canvas {
-			width: 100%;
-		}
-
-		#output {
-			margin-top: 20px;
-			background: #eee;
-			padding: 10px;
-			padding-bottom: 0;
-		}
-
-		#output div {
-			padding-bottom: 10px;
-			word-wrap: break-word;
-		}
-
-		#noQRFound {
-			text-align: center;
-		}
-		*/
-	</style>
+	<link href="https://fonts.googleapis.com/css?family=M+PLUS+1p:900|VT323&amp;subset=japanese" rel="stylesheet">
+	<link type="text/css" href="index.css" rel="stylesheet" >
 </head>
 <body>
 	<h1>QRコードでライフゲームができると嬉しい！</h1>
-	<div id="loadingMessage">動画にアクセスできません。(一度更新すると調子が良くなることがあります。)</div>
+	<div id="loadingMessage">カメラにアクセスできません。(一度更新すると調子が良くなることがあります。)</div>
 	<canvas id="canvas" hidden></canvas>
 	<div id="output" hidden>
 		<div id="outputMessage">QRコード未検出です。</div>
@@ -76,3 +30,4 @@
 	<canvas id="qrCanvas" hidden></canvas>
 </body>
 </html>
+
