@@ -9,7 +9,7 @@ var qrCanvasElement;
 var qrCanvas;
 var loadingMessage;
 var outputContainer;
-var outputMessage;
+var noQRFound;
 var outputData;
 var firstWidth = 0;
 var firstHeight = 0;
@@ -34,7 +34,7 @@ function funcOnLoad() {
 	qrCanvas = qrCanvasElement.getContext("2d");
 	loadingMessage = document.getElementById("loadingMessage");
 	outputContainer = document.getElementById("output");
-	outputMessage = document.getElementById("outputMessage");
+	noQRFound = document.getElementById("noQRFound");
 	outputData = document.getElementById("outputData");
 	document.onkeydown = interruptKeyBoard;
 //	testfunc();
@@ -71,7 +71,7 @@ function tick() {
 			inversionAttempts: "dontInvert",
 		});
 		if (code) {
-			outputMessage.hidden = true;
+			outputMessag1.hidden = true;
 			outputData.parentElement.hidden = false;
 			outputData.innerText = code.data;
 			if(firstData != code.data) {
@@ -95,7 +95,7 @@ function tick() {
 			}
 		}
 		else {
-			outputMessage.hidden = false;
+			noQRFound.hidden = false;
 			outputData.parentElement.hidden = true;
 		}
 	}

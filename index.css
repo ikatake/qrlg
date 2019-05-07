@@ -8,16 +8,16 @@ body {
 
 h1 {
 	margin: 0;
-	font-size: 28px;
+	font-size: 32px;
 	font-family: 'M PLUS 1p', sans-serif;
 }
 
 #loadingMessage {
-	text-align: center;
+	padding: 20px 0;
+	text-align: left;
+	font-size: 24px;
 	font-family: 'M PLUS 1p', sans-serif;
-/*
-			padding: 40px;
-			background-color: #eee;
+	background-color: #ddd;
 */
 }
 
@@ -26,20 +26,23 @@ canvas {
 }
 
 #output {
-	margin-top: 20px;
-	background: #eee;
-	padding: 10px;
-	padding-bottom: 0;
+	margin-top: 10px;
+	padding: 10px 0;
 	font-family: 'VT323', monospace;
+	font-family: 'M PLUS 1p', sans-serif;
+	background: #ddd;
 }
 
+#output div {
 /*
-		#output div {
-			padding-bottom: 10px;
-			word-wrap: break-word;
-		}
-
+	padding-bottom: 10px;
 */
-		#noQRFound {
-			text-align: center;
-		}
+	word-wrap: break-word;
+}
+
+#noQRFound {
+	font-size: 24px;
+	font-family: 'M PLUS 1p', sans-serif;
+	text-align: left;
+}
+
