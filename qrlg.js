@@ -71,7 +71,7 @@ function tick() {
 			inversionAttempts: "dontInvert",
 		});
 		if (code) {
-			outputMessag1.hidden = true;
+			noQRFound.hidden = true;
 			outputData.parentElement.hidden = false;
 			outputData.innerText = code.data;
 			if(firstData != code.data) {
@@ -144,7 +144,6 @@ function loop(space, canvas, sizeCell){
 	setTimeout(loop, intervalMilliSec, space, canvas, sizeCell);
 }
 
-
 function interruptKeyBoard(){
 	if (event.key === "ArrowRight") {
 		intervalMilliSec -= 100;
@@ -157,20 +156,4 @@ function interruptKeyBoard(){
 		drawCanvas(space, qrCanvas, sizeCell);
 	}
 }
-/*
-function testfunc(){
-	space.width = 5;
-	space.height = 5;
-	space.states = [false,	false,	false,	false,	false,
-					false,	false,	false,	false,	false,
-					false,	true,	true,	true,	false,
-					false,	false,	false,	false,	false,
-					false,	false,	false,	false,	false];
-	sizeCell = 100;
-	qrCanvasElement.height = 500;
-	qrCanvasElement.width = 500;
-	qrCanvasElement.hidden = false;
-	drawCanvas(space, qrCanvas, sizeCell);
-}
-*/
 
