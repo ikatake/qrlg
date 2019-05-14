@@ -18,10 +18,9 @@ h1 {
 	font-size: 24px;
 	font-family: 'M PLUS 1p', sans-serif;
 	background-color: #ddd;
-*/
 }
 
-canvas {
+#canvas {
 	width: 100%;
 }
 
@@ -45,4 +44,29 @@ canvas {
 	font-family: 'M PLUS 1p', sans-serif;
 	text-align: left;
 }
+
+#nextActivity {
+	position: absolute;
+	margin: 0;
+	background-color: #000;
+	opacity: 0.5;
+}
+
+#qrCanvas {
+	position: absolute;
+	top 0;
+	left 0;
+}
+
+.nextActLink {
+	background-color: blue;
+	color : white;
+}
+	
+#qrCanvasContainer {
+	position: relative;
+}
+
+
+
 

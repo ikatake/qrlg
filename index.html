@@ -21,13 +21,22 @@
 </head>
 <body>
 	<h1>QRコードがライフゲームすると楽しい！</h1>
-	<div id="loadingMessage">カメラにアクセスできません。(一度更新すると調子が良くなることがあります。)</div>
+	<div id="loadingMessage">カメラにアクセスできません。(再読込すると調子が良くなることがあります。)</div>
 	<canvas id="canvas" hidden></canvas>
 	<div id="output" hidden>
 		<div id="noQRFound">QRコード未検出です。</div>
 		<div hidden><b>Data:</b> <span id="outputData"></span></div>
 	</div>
-	<canvas id="qrCanvas" hidden></canvas>
+	<div id="qrCanvasContainer">
+		<canvas id="qrCanvas" hidden></canvas>
+		<div id="nextActivity" hidden>
+			<ul>
+				<li><a href="#" id="seeContinue" class="nextActLink" hidden>続きを見る</a></li>
+				<li><a href="#" id="tweetResult" class="nextActLink" hidden>結果をtweet</a></li>
+				<li><a href="#" id="reload" class="nextActLink" hidden>再読込</a></li>
+			</ul>
+		</div>
+	</div>
 </body>
 </html>
 

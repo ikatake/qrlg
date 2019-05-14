@@ -11,6 +11,10 @@ var loadingMessage;
 var outputContainer;
 var noQRFound;
 var outputData;
+var nextActivityElement;
+var seeContinue;
+var tweetResult;
+var reload;
 var firstWidth = 0;
 var firstHeight = 0;
 var firstData = "";
@@ -36,6 +40,10 @@ function funcOnLoad() {
 	outputContainer = document.getElementById("output");
 	noQRFound = document.getElementById("noQRFound");
 	outputData = document.getElementById("outputData");
+	seeContinue = document.getElementById("seeContinue");
+	tweetResult = document.getElementById("tweetResult");
+	reload = document.getElementById("reload");
+	nextActivityElement = document.getElementById("nextActivity");
 	document.onkeydown = interruptKeyBoard;
 //	testfunc();
 }
@@ -106,7 +114,6 @@ function enjoy(binaryMatrix) {
 	//縦と横の長い方を取る。
 	var maxSizeMatrix = max(binaryMatrix.height, binaryMatrix.width);
 	//最大のキャンバスサイズを長辺長さで割って、1セルのサイズを出す。
-//	var sizeCell = Math.floor( IMG_SIZE_MAX / maxSizeMatrix );
 	sizeCell = Math.floor( IMG_SIZE_MAX / maxSizeMatrix );
 	//キャンバスのサイズを求める。
 	qrCanvasElement.height = binaryMatrix.height * sizeCell + TEXT_HEIGHT;
@@ -123,7 +130,7 @@ function loop(space, canvas, sizeCell){
 	} else if (space.generation == 100) {
 		intervalMilliSec = 10;
 	} else if (space.generation == 1000) {
-		clearTimeout(tid);
+		seeNext(false);
 		return;
 	}
 	var intervalGeneration = getIntervalGenerationPast(space, pastStates);
@@ -132,10 +139,12 @@ function loop(space, canvas, sizeCell){
 	} else if (intervalGeneration == 1) {
 		var msg = "frozen.";
 		drawEndMessage(space, qrCanvas, sizeCell, msg);
+		seeNext(true);
 		return;
 	} else {
 		var msg = "loop " + intervalGeneration + " generations.";
 		drawEndMessage(space, qrCanvas, sizeCell, msg);
+		seeNext(true);
 		return;
 	}
 	
@@ -144,13 +153,16 @@ function loop(space, canvas, sizeCell){
 	setTimeout(loop, intervalMilliSec, space, canvas, sizeCell);
 }
 
+function seeNext(isDead) {
+	nextActivityElement.height = qrCanvasElement.height - TEXT_HEIGHT;
+	nextActivityElement.width = qrCanvasElement.width;
+	clearTimeout(tid);
+	nextActivityElement.hidden = false;
+	tweetResult.hidden = false;
+	reload.hidden = false;
+}
+
 function interruptKeyBoard(){
-	if (event.key === "ArrowRight") {
-		intervalMilliSec -= 100;
-	}
-	if (event.key === "ArrowLeft") {
-		intervalMilliSec += 100;
-	}
 	if (event.key === "Enter") {
 		space = getNextGeneration(space);
 		drawCanvas(space, qrCanvas, sizeCell);

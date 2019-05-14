@@ -19,14 +19,17 @@ function drawCanvas(space, canvas, sizeCell) {
 	}
 	canvas.fillStyle = "rgba( 255, 255, 255, 1)";
 	canvas.fillRect(0, space.height * sizeCell, space.width * sizeCell, TEXT_HEIGHT);
-	canvas.font = "30px monospace";
+	canvas.fillStyle = "rgba( 0, 0, 0, 1)";
+	canvas.font = "31px VT323";
 	canvas.textBaseline = "top";
-	canvas.strokeText(space.generation.toString(), 0, space.height * sizeCell);
+	canvas.fillText(space.generation.toString(), 0, space.height * sizeCell);
 }
+
 function drawEndMessage(space, canvas, sizeCell, msg) {
 	canvas.fillStyle = "rgba( 255, 255, 255, 1)";
 	canvas.fillRect(0, space.height * sizeCell, space.width * sizeCell, TEXT_HEIGHT);
+	canvas.fillStyle = "rgba( 0, 0, 0, 1)";
 	var text = space.generation.toString() + " " + msg;
-	canvas.strokeText(text, 0, space.height * sizeCell);
+	canvas.fillText(text, 0, space.height * sizeCell);
 }
 
