@@ -118,6 +118,8 @@ function enjoy(binaryMatrix) {
 	//キャンバスのサイズを求める。
 	qrCanvasElement.height = binaryMatrix.height * sizeCell + TEXT_HEIGHT;
 	qrCanvasElement.width = binaryMatrix.width * sizeCell;
+	nextActivityElement.style.height = binaryMatrix.height * sizeCell + "px";
+	nextActivityElement.style.width = binaryMatrix.width * sizeCell + "px";
 	var space = getInitialSpace(binaryMatrix);
 	space = getInitialSpace(binaryMatrix);
 	drawCanvas(space, qrCanvas, sizeCell);
@@ -154,8 +156,6 @@ function loop(space, canvas, sizeCell){
 }
 
 function seeNext(isDead) {
-	nextActivityElement.height = qrCanvasElement.height - TEXT_HEIGHT;
-	nextActivityElement.width = qrCanvasElement.width;
 	clearTimeout(tid);
 	nextActivityElement.hidden = false;
 	tweetResult.hidden = false;
