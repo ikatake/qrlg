@@ -57,15 +57,16 @@ h1 {
 	margin: 0;
 }
 
-.nextActLink {
-	background-color: blue;
-	color : white;
-}
-	
 #qrCanvasContainer {
 	position: relative;
 }
 
+#nextActivity ul li {
+	margin-bottom: 50px;
+}
 
-
-
+#nextActivity ul li a{
+	color : white;
+	font-family: 'M PLUS 1p';
+	font-size: 46pt;
+}

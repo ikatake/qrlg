@@ -158,6 +158,9 @@ function loop(space, canvas, sizeCell){
 function seeNext(isDead) {
 	clearTimeout(tid);
 	nextActivityElement.hidden = false;
+	if (isDead == false) {
+		seeContinue.hidden = false;
+	} 
 	tweetResult.hidden = false;
 	reload.hidden = false;
 }
@@ -169,3 +172,7 @@ function interruptKeyBoard(){
 	}
 }
 
+function tweet() {
+	//
+	//
+}
