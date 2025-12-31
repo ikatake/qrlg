@@ -7,7 +7,7 @@ import {
 
 const video = document.getElementById("video") as HTMLVideoElement;
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-const ctx = canvas.getContext("2d")!;
+const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
 const shareBtn = document.getElementById("share") as HTMLButtonElement;
 
 // ---------- カメラ起動 ----------
@@ -26,7 +26,7 @@ let running = false;
 reader.decodeFromVideoDevice(
   null,
   video,
-  (result: any, controls: any) => {
+  (result: any, error: any, controls: any) => {
     if (lifeCells) return;
 
     // 非同期処理は即時関数で分離
@@ -68,14 +68,33 @@ reader.decodeFromVideoDevice(
           lifeCells.push(row);
         }
 
-        if (controls) {
-          controls.stop();
+        // カメラ停止を試みる（エラーは無視）
+        try {
+          if (controls) {
+            controls.stop();
+          }
+        } catch (e) {
+          console.warn("カメラ停止エラー:", e);
         }
+        
+        // ビデオを非表示
+        video.style.display = "none";
+        
+        console.log("QRコード読み取り成功:", h, "x", w);
+        console.log("初期セル数:", lifeCells.flat().filter(c => c).length);
+        
         running = true;
-        requestAnimationFrame(loop);
+        
+        // 初期状態を描画
+        drawLifeGame();
+        
+        // ライフゲーム開始
+        setTimeout(() => {
+          requestAnimationFrame(loop);
+        }, 1000);
 
-      } catch {
-        // QR 未検出時は無視
+      } catch (e) {
+        // QR未検出時は無視（正常な動作）
       }
     })();
   }
@@ -105,15 +124,16 @@ function nextGeneration(cells: boolean[][]): boolean[][] {
   return next;
 }
 
-// ---------- 実行 ----------
-function loop() {
-  if (!running || !lifeCells) return;
+// ---------- 描画 ----------
+function drawLifeGame() {
+  if (!lifeCells) return;
 
   const size = 10;
   canvas.width = lifeCells[0].length * size;
   canvas.height = lifeCells.length * size;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#000";
 
   lifeCells.forEach((row, y) =>
     row.forEach((v, x) => {
@@ -122,9 +142,19 @@ function loop() {
       }
     })
   );
+}
 
+// ---------- 実行 ----------
+function loop() {
+  if (!running || !lifeCells) return;
+
+  // 次の世代を計算
   lifeCells = nextGeneration(lifeCells);
   generation++;
+
+  // 描画
+  drawLifeGame();
+
   setTimeout(() => requestAnimationFrame(loop), 200);
 }
 
