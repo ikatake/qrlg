@@ -25264,6 +25264,8 @@ const shareButtonsDiv = document.getElementById("shareButtons");
 const shareXBtn = document.getElementById("shareX");
 const shareFacebookBtn = document.getElementById("shareFacebook");
 const shareBlueskyBtn = document.getElementById("shareBluesky");
+const shareThreadsBtn = document.getElementById("shareThreads");
+const shareTruthSocialBtn = document.getElementById("shareTruthSocial");
 const stream = await navigator.mediaDevices.getUserMedia({
   video: { facingMode: "environment" }
 });
@@ -25419,7 +25421,19 @@ function loop() {
     history.pop();
   }
   drawLifeGame();
-  setTimeout(() => requestAnimationFrame(loop), 200);
+  let interval;
+  if (generation === 1) {
+    interval = 3e3;
+  } else if (generation <= 5) {
+    interval = 1e3;
+  } else if (generation <= 30) {
+    interval = 200;
+  } else if (generation <= 100) {
+    interval = 100;
+  } else {
+    interval = 20;
+  }
+  setTimeout(() => requestAnimationFrame(loop), interval);
 }
 downloadGifBtn.onclick = async () => {
   downloadGifBtn.disabled = true;
@@ -25461,7 +25475,7 @@ downloadGifBtn.onclick = async () => {
     a.click();
     URL.revokeObjectURL(url);
     downloadGifBtn.disabled = false;
-    downloadGifBtn.textContent = "記念に保存";
+    downloadGifBtn.textContent = "GIF動画を記念に保存";
   });
   gif2.render();
 };
@@ -25480,4 +25494,12 @@ shareBlueskyBtn.onclick = () => {
   const text = encodeURIComponent(shareText() + "\n" + shareUrl);
   window.open(`https://bsky.app/intent/compose?text=${text}`, "_blank");
 };
-//# sourceMappingURL=index-C0pL53qd.js.map
+shareThreadsBtn.onclick = () => {
+  const text = encodeURIComponent(shareText() + " " + shareUrl);
+  window.open(`https://threads.net/intent/post?text=${text}`, "_blank");
+};
+shareTruthSocialBtn.onclick = () => {
+  const text = encodeURIComponent(shareText() + " " + shareUrl);
+  window.open(`https://truthsocial.com/share?url=${encodeURIComponent(shareUrl)}&title=${text}`, "_blank");
+};
+//# sourceMappingURL=index-Dkh7Syq8.js.map

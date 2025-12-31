@@ -15,6 +15,8 @@ const shareButtonsDiv = document.getElementById("shareButtons") as HTMLDivElemen
 const shareXBtn = document.getElementById("shareX") as HTMLButtonElement;
 const shareFacebookBtn = document.getElementById("shareFacebook") as HTMLButtonElement;
 const shareBlueskyBtn = document.getElementById("shareBluesky") as HTMLButtonElement;
+const shareThreadsBtn = document.getElementById("shareThreads") as HTMLButtonElement;
+const shareTruthSocialBtn = document.getElementById("shareTruthSocial") as HTMLButtonElement;
 
 // ---------- カメラ起動 ----------
 const stream = await navigator.mediaDevices.getUserMedia({
@@ -238,7 +240,21 @@ function loop() {
   // 描画
   drawLifeGame();
 
-  setTimeout(() => requestAnimationFrame(loop), 200);
+  // 世代数に応じた更新間隔
+  let interval: number;
+  if (generation === 1) {
+    interval = 3000; // 最初の遷移は3秒
+  } else if (generation <= 5) {
+    interval = 1000; // 1秒
+  } else if (generation <= 30) {
+    interval = 200; // 200msec
+  } else if (generation <= 100) {
+    interval = 100; // 100msec
+  } else {
+    interval = 20; // 20msec
+  }
+
+  setTimeout(() => requestAnimationFrame(loop), interval);
 }
 
 // ---------- GIFダウンロード ----------
@@ -293,7 +309,7 @@ downloadGifBtn.onclick = async () => {
     URL.revokeObjectURL(url);
     
     downloadGifBtn.disabled = false;
-    downloadGifBtn.textContent = "記念に保存";
+    downloadGifBtn.textContent = "GIF動画を記念に保存";
   });
   
   gif.render();
@@ -320,4 +336,16 @@ shareFacebookBtn.onclick = () => {
 shareBlueskyBtn.onclick = () => {
   const text = encodeURIComponent(shareText() + "\n" + shareUrl);
   window.open(`https://bsky.app/intent/compose?text=${text}`, '_blank');
+};
+
+// Threads
+shareThreadsBtn.onclick = () => {
+  const text = encodeURIComponent(shareText() + " " + shareUrl);
+  window.open(`https://threads.net/intent/post?text=${text}`, '_blank');
+};
+
+// TRUTH Social
+shareTruthSocialBtn.onclick = () => {
+  const text = encodeURIComponent(shareText() + " " + shareUrl);
+  window.open(`https://truthsocial.com/share?url=${encodeURIComponent(shareUrl)}&title=${text}`, '_blank');
 };
