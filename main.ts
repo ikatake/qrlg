@@ -37,8 +37,18 @@ reader.decodeFromVideoDevice(
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
+      // RGBA(4バイト/ピクセル) から 輝度(1バイト/ピクセル) に変換
+      const luminancePixels = new Uint8ClampedArray(imageData.width * imageData.height);
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        const r = imageData.data[i];
+        const g = imageData.data[i + 1];
+        const b = imageData.data[i + 2];
+        // 輝度計算（より正確な加重平均）
+        luminancePixels[i / 4] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+      }
+
       const luminance = new RGBLuminanceSource(
-        imageData.data,
+        luminancePixels as any,
         imageData.width,
         imageData.height
       );
@@ -52,13 +62,18 @@ reader.decodeFromVideoDevice(
       const Detector = DetectorModule.default;
 
       try {
-        const detector = new Detector(bitmap.getBlackMatrix());
+        const blackMatrix = bitmap.getBlackMatrix();
+        
+        // QRコードとして正しく検出できるか確認
+        const detector = new Detector(blackMatrix);
         const detectorResult = detector.detect(new Map());
+        
+        // モジュール単位のデータを取得（ファインダーパターン含む）
         const bits = detectorResult.getBits();
-
         const h = bits.getHeight();
         const w = bits.getWidth();
-
+        console.log(bits.toString())
+        
         lifeCells = [];
         for (let y = 0; y < h; y++) {
           const row: boolean[] = [];
@@ -91,7 +106,7 @@ reader.decodeFromVideoDevice(
         // ライフゲーム開始
         setTimeout(() => {
           requestAnimationFrame(loop);
-        }, 1000);
+        }, 100);
 
       } catch (e) {
         // QR未検出時は無視（正常な動作）

@@ -24778,8 +24778,15 @@ reader.decodeFromVideoDevice(
       canvas.height = video.videoHeight;
       ctx.drawImage(video, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const luminancePixels = new Uint8ClampedArray(imageData.width * imageData.height);
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        const r = imageData.data[i];
+        const g = imageData.data[i + 1];
+        const b = imageData.data[i + 2];
+        luminancePixels[i / 4] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+      }
       const luminance = new RGBLuminanceSource(
-        imageData.data,
+        luminancePixels,
         imageData.width,
         imageData.height
       );
@@ -24789,11 +24796,13 @@ reader.decodeFromVideoDevice(
       const DetectorModule = await __vitePreload(() => import("./Detector-CKDKy-C-.js").then((n) => n.l), true ? [] : void 0, import.meta.url);
       const Detector2 = DetectorModule.default;
       try {
-        const detector = new Detector2(bitmap.getBlackMatrix());
+        const blackMatrix = bitmap.getBlackMatrix();
+        const detector = new Detector2(blackMatrix);
         const detectorResult = detector.detect(/* @__PURE__ */ new Map());
         const bits = detectorResult.getBits();
         const h = bits.getHeight();
         const w = bits.getWidth();
+        console.log(bits.toString());
         lifeCells = [];
         for (let y = 0; y < h; y++) {
           const row = [];
@@ -24816,7 +24825,7 @@ reader.decodeFromVideoDevice(
         drawLifeGame();
         setTimeout(() => {
           requestAnimationFrame(loop);
-        }, 1e3);
+        }, 100);
       } catch (e) {
       }
     })();
@@ -24873,4 +24882,4 @@ shareBtn.onclick = async () => {
 世代数: ${generation}`
   });
 };
-//# sourceMappingURL=index-B56Sh5iA.js.map
+//# sourceMappingURL=index-ooy1MIIY.js.map
