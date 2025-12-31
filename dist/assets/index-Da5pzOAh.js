@@ -24764,6 +24764,16 @@ const stream = await navigator.mediaDevices.getUserMedia({
   video: { facingMode: "environment" }
 });
 video.srcObject = stream;
+video.addEventListener("loadedmetadata", () => {
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  function drawCamera() {
+    if (lifeCells) return;
+    ctx.drawImage(video, 0, 0);
+    requestAnimationFrame(drawCamera);
+  }
+  drawCamera();
+});
 const reader = new BrowserMultiFormatReader();
 let lifeCells = null;
 let generation = 0;
@@ -24818,7 +24828,6 @@ reader.decodeFromVideoDevice(
         } catch (e) {
           console.warn("カメラ停止エラー:", e);
         }
-        video.style.display = "none";
         console.log("QRコード読み取り成功:", h, "x", w);
         console.log("初期セル数:", lifeCells.flat().filter((c) => c).length);
         running = true;
@@ -24882,4 +24891,4 @@ shareBtn.onclick = async () => {
 世代数: ${generation}`
   });
 };
-//# sourceMappingURL=index-ooy1MIIY.js.map
+//# sourceMappingURL=index-Da5pzOAh.js.map

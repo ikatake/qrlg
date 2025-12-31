@@ -16,6 +16,20 @@ const stream = await navigator.mediaDevices.getUserMedia({
 });
 video.srcObject = stream;
 
+// ビデオの準備ができたらcanvasにカメラ映像を表示
+video.addEventListener("loadedmetadata", () => {
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  
+  // カメラ映像をcanvasに描画し続ける
+  function drawCamera() {
+    if (lifeCells) return; // QR読み取り後は停止
+    ctx.drawImage(video, 0, 0);
+    requestAnimationFrame(drawCamera);
+  }
+  drawCamera();
+});
+
 // ---------- Reader ----------
 const reader = new BrowserMultiFormatReader();
 
@@ -92,8 +106,7 @@ reader.decodeFromVideoDevice(
           console.warn("カメラ停止エラー:", e);
         }
         
-        // ビデオを非表示
-        video.style.display = "none";
+        // カメラ映像の描画は自動的に停止（lifeCellsがnullでなくなるため）
         
         console.log("QRコード読み取り成功:", h, "x", w);
         console.log("初期セル数:", lifeCells.flat().filter(c => c).length);
