@@ -13,7 +13,14 @@
   <video id="video" autoplay playsinline style="display: none;"></video>
   <canvas id="canvas"></canvas>
   <br />
-  <button id="share">結果を共有</button>
+  <div id="downloadButtons" style="display: none; margin-top: 10px;">
+    <button id="downloadGif">記念に保存</button>
+  </div>
+  <div id="shareButtons" style="display: none; margin-top: 10px;">
+    <button id="shareX">Twitter(自称X)で共有</button>
+    <button id="shareFacebook">Facebookで共有</button>
+    <button id="shareBluesky">BlueSkyで共有</button>
+  </div>
 
   <script type="module" src="./main.ts"></script>
 </body>

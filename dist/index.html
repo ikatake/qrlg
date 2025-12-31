@@ -8,14 +8,21 @@
     canvas { border: 1px solid #333; }
     button { margin-top: 8px; }
   </style>
-  <script type="module" crossorigin src="./assets/index-CgjGBjd8.js"></script>
+  <script type="module" crossorigin src="./assets/index-C0pL53qd.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/Detector-CKDKy-C-.js">
 </head>
 <body>
   <video id="video" autoplay playsinline style="display: none;"></video>
   <canvas id="canvas"></canvas>
   <br />
-  <button id="share">結果を共有</button>
+  <div id="downloadButtons" style="display: none; margin-top: 10px;">
+    <button id="downloadGif">記念に保存</button>
+  </div>
+  <div id="shareButtons" style="display: none; margin-top: 10px;">
+    <button id="shareX">Twitter(自称X)で共有</button>
+    <button id="shareFacebook">Facebookで共有</button>
+    <button id="shareBluesky">BlueSkyで共有</button>
+  </div>
 
 </body>
 </html>

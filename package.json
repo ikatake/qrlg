@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "@zxing/library": "^0.21.3"
+    "@zxing/library": "^0.21.3",
+    "gif.js": "^0.2.0"
   },
   "devDependencies": {
     "vite": "^7.3.0"
