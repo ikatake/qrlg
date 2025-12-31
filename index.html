@@ -4,15 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QR Life Game</title>
+  <style>
+    canvas { border: 1px solid #333; }
+    button { margin-top: 8px; }
+  </style>
 </head>
 <body>
-  <video id="camera" playsinline></video>
-  <canvas id="preview"></canvas>
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas"></canvas>
+  <br />
+  <button id="share">結果を共有</button>
 
-  <button id="scanBtn">QRを読み取る</button>
-  <button id="runBtn">ライフゲーム開始</button>
-  <button id="shareBtn">結果を共有</button>
-
-  <script type="module" src="/main.ts"></script>
+  <script type="module" src="./main.ts"></script>
 </body>
 </html>
