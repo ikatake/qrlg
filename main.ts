@@ -249,7 +249,7 @@ function loop() {
   } else if (generation <= 30) {
     interval = 200; // 200msec
   } else if (generation <= 100) {
-    interval = 100; // 100msec
+    interval = 60; // 60msec
   } else {
     interval = 20; // 20msec
   }
