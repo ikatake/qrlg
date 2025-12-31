@@ -36,6 +36,8 @@ const reader = new BrowserMultiFormatReader();
 let lifeCells: boolean[][] | null = null;
 let generation = 0;
 let running = false;
+let history: string[] = []; // 過去の状態を保持（最大100世代）
+const MAX_HISTORY = 1000;
 
 reader.decodeFromVideoDevice(
   null,
@@ -179,6 +181,40 @@ function loop() {
   // 次の世代を計算
   lifeCells = nextGeneration(lifeCells);
   generation++;
+
+  // 現在の状態を文字列化
+  const currentState = lifeCells.map(row => row.map(v => v ? '1' : '0').join('')).join('\n');
+  
+  // 過去の状態と比較
+  const cycleIndex = history.indexOf(currentState);
+  if (cycleIndex !== -1) {
+    // ループまたは固定を検出
+    const cycle = cycleIndex + 1; // cycleIndex=0なら1世代前と同じ（周期1）
+    running = false;
+    
+    console.log("=== ライフゲーム終了 ===");
+    console.log("寿命:", generation, "世代");
+    if (cycle === 1) {
+      console.log("状態: 固定");
+    } else {
+      console.log("状態: ループ（周期", cycle, "）");
+    }
+    
+    // 結果をページに表示
+    const result = document.createElement('div');
+    result.style.marginTop = '10px';
+    result.style.fontWeight = 'bold';
+    result.innerHTML = `寿命: ${generation}世代<br>状態: ${cycle === 1 ? '固定' : `ループ（周期${cycle}）`}`;
+    document.body.appendChild(result);
+    
+    return; // ループ終了
+  }
+  
+  // 履歴に追加（最大100世代まで）
+  history.unshift(currentState);
+  if (history.length > MAX_HISTORY) {
+    history.pop();
+  }
 
   // 描画
   drawLifeGame();

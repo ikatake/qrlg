@@ -24778,6 +24778,8 @@ const reader = new BrowserMultiFormatReader();
 let lifeCells = null;
 let generation = 0;
 let running = false;
+let history = [];
+const MAX_HISTORY = 1e3;
 reader.decodeFromVideoDevice(
   null,
   video,
@@ -24880,6 +24882,29 @@ function loop() {
   if (!running || !lifeCells) return;
   lifeCells = nextGeneration(lifeCells);
   generation++;
+  const currentState = lifeCells.map((row) => row.map((v) => v ? "1" : "0").join("")).join("\n");
+  const cycleIndex = history.indexOf(currentState);
+  if (cycleIndex !== -1) {
+    const cycle = cycleIndex + 1;
+    running = false;
+    console.log("=== ライフゲーム終了 ===");
+    console.log("寿命:", generation, "世代");
+    if (cycle === 1) {
+      console.log("状態: 固定");
+    } else {
+      console.log("状態: ループ（周期", cycle, "）");
+    }
+    const result = document.createElement("div");
+    result.style.marginTop = "10px";
+    result.style.fontWeight = "bold";
+    result.innerHTML = `寿命: ${generation}世代<br>状態: ${cycle === 1 ? "固定" : `ループ（周期${cycle}）`}`;
+    document.body.appendChild(result);
+    return;
+  }
+  history.unshift(currentState);
+  if (history.length > MAX_HISTORY) {
+    history.pop();
+  }
   drawLifeGame();
   setTimeout(() => requestAnimationFrame(loop), 200);
 }
@@ -24891,4 +24916,4 @@ shareBtn.onclick = async () => {
 世代数: ${generation}`
   });
 };
-//# sourceMappingURL=index-Da5pzOAh.js.map
+//# sourceMappingURL=index-CgjGBjd8.js.map
