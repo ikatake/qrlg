@@ -1,42 +1,18 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-	<meta charset="utf-8">
-	<meta name="twitter:card" content="player" />
-	<meta name="twitter:site" content="@ikatake" />
-	<meta name="twitter:player" content="https://www.wetsteam.org/lifegamebot/gifs/00003627.gif" />
-	<meta name="twitter:player:width" content="100" />
-	<meta name="twitter:player:height" content="100" />
-	<meta property="og:url" content="https://wetsteam.org/qrlg" />
-	<meta property="og:title" content="QRcode lifegame" /> 
-	<meta property="og:description" content="qrcode lifegame" /> 
-	<meta property="og:image" content="https://www.wetsteam.org/lifegamebot/gifs/00003627.gif" />
-	<title>QRコードがライフゲームすると楽しい！</title>
-	<script src="./jsQR.js"></script>
-	<script src="./qrlg.js"></script>
-	<script src="./util.js"></script>
-	<script src="./lg.js"></script>
-	<script src="./drawStates.js"></script>
-	<link href="https://fonts.googleapis.com/css?family=M+PLUS+1p:900|VT323&amp;subset=japanese" rel="stylesheet">
-	<link type="text/css" href="index.css" rel="stylesheet" >
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Life Game</title>
 </head>
 <body>
-	<h1>QRコードがライフゲームすると楽しい！</h1>
-	<div id="loadingMessage">カメラにアクセスできません。(再読込すると調子が良くなることがあります。)</div>
-	<canvas id="canvas" hidden></canvas>
-	<div id="output" hidden>
-		<div id="noQRFound">QRコード未検出です。</div>
-		<div hidden><b>Data:</b> <span id="outputData"></span></div>
-	</div>
-	<div id="qrCanvasContainer">
-		<canvas id="qrCanvas" hidden></canvas>
-		<div id="nextActivity" hidden width="0" height="0">
-			<ul>
-				<li><a href="#" id="seeContinue" class="nextActLink" hidden>続きを見る</a></li>
-				<li><a href="#" id="tweetResult" class="nextActLink" hidden>結果をtweet</a></li>
-				<li><a href="#" id="reload" class="nextActLink" hidden>再読込</a></li>
-			</ul>
-		</div>
-	</div>
+  <video id="camera" playsinline></video>
+  <canvas id="preview"></canvas>
+
+  <button id="scanBtn">QRを読み取る</button>
+  <button id="runBtn">ライフゲーム開始</button>
+  <button id="shareBtn">結果を共有</button>
+
+  <script type="module" src="/main.ts"></script>
 </body>
 </html>
-
